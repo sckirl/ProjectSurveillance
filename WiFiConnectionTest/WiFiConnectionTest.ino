@@ -63,8 +63,6 @@ void loop() {
         digitalWrite(BUZZER, LOW);
         delay(200);
       }
-
-      
     }
 
   delay(1);
