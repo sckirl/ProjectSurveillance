@@ -31,6 +31,7 @@ class ComputerVision(QObject):
 
         while self.is_running:
             ret, frame = self.camera.read()
+            frame = cv2.resize(frame, (640, 480))
             if not ret:
                 self.is_running = False
                 continue
