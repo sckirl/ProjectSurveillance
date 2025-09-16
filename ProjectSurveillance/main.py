@@ -5,7 +5,6 @@ import cv2
 from ultralytics import YOLO
 from YOLOdetection import *
 from ultralytics.utils.plotting import Annotator, colors
-from FrameDifferencing import *
 import DroneAccess
 
 # ---- Setup ----

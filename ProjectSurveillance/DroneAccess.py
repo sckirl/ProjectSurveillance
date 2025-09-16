@@ -12,6 +12,7 @@ class Drone:
         self.ser = None
         self.MSP_RAW_IMU = 102
 
+
     def connect(self):
         try:
             self.ser = serial.Serial(self.com_port, self.baud_rate, timeout=1)
@@ -55,6 +56,7 @@ class DroneWorker(QObject):
     # Signal to send data back to the main UI thread
     gyro_data_updated = Signal(tuple)
     connection_status = Signal(str)
+    finished = Signal()
 
     def __init__(self, com_port):
         super().__init__()
@@ -81,6 +83,7 @@ class DroneWorker(QObject):
 
         self.drone.disconnect()
         self.connection_status.emit("Disconnected")
+        self.finished.emit()
 
     def stop(self):
         self.is_running = False
