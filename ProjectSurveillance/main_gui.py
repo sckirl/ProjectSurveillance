@@ -6,10 +6,15 @@ class MainUI(QMainWindow):
     def __init__(self):
         super().__init__()
         loader = QUiLoader()
-        ui_file = QFile("Interface/MainInterface/form.ui")
+        ui_file = QFile("MainInterface/form.ui")
         ui_file.open(QFile.ReadOnly)
         self.ui = loader.load(ui_file, self)   # load UI
         ui_file.close()
+
+        
+
+    def onClick():
+        print("hello world")
 
 if __name__ == "__main__":
     app = QApplication([])

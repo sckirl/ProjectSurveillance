@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>700</width>
     <height>600</height>
    </rect>
   </property>
@@ -14,114 +14,120 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="horizontalLayoutWidget">
+   <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>80</y>
-      <width>421</width>
-      <height>311</height>
+      <x>10</x>
+      <y>10</y>
+      <width>671</width>
+      <height>521</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
         <number>0</number>
        </property>
-       <widget class="QWidget" name="tab">
+       <widget class="QWidget" name="CameraTab">
         <attribute name="title">
          <string>Tab 1</string>
         </attribute>
-        <widget class="QFrame" name="frame_2">
+        <widget class="QWidget" name="verticalLayoutWidget_2">
          <property name="geometry">
           <rect>
-           <x>30</x>
-           <y>20</y>
-           <width>361</width>
-           <height>181</height>
+           <x>-1</x>
+           <y>-1</y>
+           <width>671</width>
+           <height>461</height>
           </rect>
          </property>
-         <property name="frameShape">
-          <enum>QFrame::Shape::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Shadow::Raised</enum>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QGraphicsView" name="graphicsView"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Choose Drone Serial</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox">
+            <item>
+             <property name="text">
+              <string>Serial 11520</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Serial 9600</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Choose Camera Input</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_2">
+            <item>
+             <property name="text">
+              <string>Camera 1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Camera 2</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
         </widget>
-        <widget class="QPushButton" name="pushButton">
-         <property name="geometry">
-          <rect>
-           <x>150</x>
-           <y>170</y>
-           <width>100</width>
-           <height>32</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-        <widget class="QProgressBar" name="progressBar">
-         <property name="geometry">
-          <rect>
-           <x>140</x>
-           <y>140</y>
-           <width>118</width>
-           <height>23</height>
-          </rect>
-         </property>
-         <property name="value">
-          <number>24</number>
-         </property>
-        </widget>
+       </widget>
+       <widget class="QWidget" name="MapTab">
+        <attribute name="title">
+         <string>Tab 2</string>
+        </attribute>
         <widget class="QWidget" name="verticalLayoutWidget">
          <property name="geometry">
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>421</width>
-           <height>291</height>
+           <width>671</width>
+           <height>491</height>
           </rect>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout"/>
-        </widget>
-       </widget>
-       <widget class="QWidget" name="tab_2">
-        <attribute name="title">
-         <string>Tab 2</string>
-        </attribute>
-        <widget class="QFrame" name="frame">
-         <property name="geometry">
-          <rect>
-           <x>40</x>
-           <y>20</y>
-           <width>211</width>
-           <height>111</height>
-          </rect>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::Shape::StyledPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Shadow::Raised</enum>
-         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QWebEngineView" name="MapWebView">
+            <property name="url">
+             <url>
+              <string>about:blank</string>
+             </url>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="MapRestart">
+            <property name="text">
+             <string>Restart</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </widget>
       </widget>
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>36</height>
-    </rect>
-   </property>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -135,6 +141,13 @@
    </attribute>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
