@@ -6,7 +6,10 @@ import folium
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 
+<<<<<<< HEAD
+=======
 # --- Step 1: Create the PyQt Application Window ---
+>>>>>>> master
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()

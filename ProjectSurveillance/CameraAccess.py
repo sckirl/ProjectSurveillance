@@ -3,7 +3,7 @@ from ultralytics import YOLO
 from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtGui import QImage, QPixmap
 
-class ComputerVision(QObject):
+class CameraWorker(QObject):
     # Signals to send data back to the main UI thread
     frameUpdated = Signal(QPixmap)
     visionStatus = Signal(str)
@@ -31,11 +31,11 @@ class ComputerVision(QObject):
 
         while self.is_running:
             ret, frame = self.camera.read()
-            frame = cv2.resize(frame, (640, 480))
             if not ret:
                 self.is_running = False
                 continue
 
+            frame = cv2.resize(frame, (640, 480))
             # --- YOLO Detection ---
             results = self.model.predict(frame, verbose=False)
             annotated_frame = results[0].plot()
