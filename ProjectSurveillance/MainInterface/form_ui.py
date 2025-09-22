@@ -40,37 +40,38 @@ class Ui_MainWindow(object):
         self.verticalLayoutWidget_2 = QWidget(self.CameraTab)
         self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
         self.verticalLayoutWidget_2.setGeometry(QRect(-1, -1, 671, 461))
-        self.verticalLayout_2 = QVBoxLayout(self.verticalLayoutWidget_2)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.graphicsView = QGraphicsView(self.verticalLayoutWidget_2)
-        self.graphicsView.setObjectName(u"graphicsView")
+        self.verticalLayoutCamera = QVBoxLayout(self.verticalLayoutWidget_2)
+        self.verticalLayoutCamera.setObjectName(u"verticalLayoutCamera")
+        self.verticalLayoutCamera.setContentsMargins(0, 0, 0, 0)
+        self.cameraView = QGraphicsView(self.verticalLayoutWidget_2)
+        self.cameraView.setObjectName(u"cameraView")
 
-        self.verticalLayout_2.addWidget(self.graphicsView)
+        self.verticalLayoutCamera.addWidget(self.cameraView)
+
+        self.readButton = QPushButton(self.verticalLayoutWidget_2)
+        self.readButton.setObjectName(u"readButton")
+
+        self.verticalLayoutCamera.addWidget(self.readButton)
 
         self.label = QLabel(self.verticalLayoutWidget_2)
         self.label.setObjectName(u"label")
 
-        self.verticalLayout_2.addWidget(self.label)
+        self.verticalLayoutCamera.addWidget(self.label)
 
-        self.comboBox = QComboBox(self.verticalLayoutWidget_2)
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.setObjectName(u"comboBox")
+        self.SerialComboBox = QComboBox(self.verticalLayoutWidget_2)
+        self.SerialComboBox.setObjectName(u"SerialComboBox")
 
-        self.verticalLayout_2.addWidget(self.comboBox)
+        self.verticalLayoutCamera.addWidget(self.SerialComboBox)
 
         self.label_2 = QLabel(self.verticalLayoutWidget_2)
         self.label_2.setObjectName(u"label_2")
 
-        self.verticalLayout_2.addWidget(self.label_2)
+        self.verticalLayoutCamera.addWidget(self.label_2)
 
-        self.comboBox_2 = QComboBox(self.verticalLayoutWidget_2)
-        self.comboBox_2.addItem("")
-        self.comboBox_2.addItem("")
-        self.comboBox_2.setObjectName(u"comboBox_2")
+        self.CameraComboBox = QComboBox(self.verticalLayoutWidget_2)
+        self.CameraComboBox.setObjectName(u"CameraComboBox")
 
-        self.verticalLayout_2.addWidget(self.comboBox_2)
+        self.verticalLayoutCamera.addWidget(self.CameraComboBox)
 
         self.tabWidget.addTab(self.CameraTab, "")
         self.MapTab = QWidget()
@@ -111,17 +112,12 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.readButton.setText(QCoreApplication.translate("MainWindow", u"Read", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Choose Drone Serial", None))
-        self.comboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Serial 11520", None))
-        self.comboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Serial 9600", None))
-
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Choose Camera Input", None))
-        self.comboBox_2.setItemText(0, QCoreApplication.translate("MainWindow", u"Camera 1", None))
-        self.comboBox_2.setItemText(1, QCoreApplication.translate("MainWindow", u"Camera 2", None))
-
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Tab 1", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Camera", None))
         self.MapRestart.setText(QCoreApplication.translate("MainWindow", u"Restart", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.MapTab), QCoreApplication.translate("MainWindow", u"Tab 2", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.MapTab), QCoreApplication.translate("MainWindow", u"Map", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi
 

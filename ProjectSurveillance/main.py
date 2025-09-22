@@ -1,4 +1,4 @@
-from CameraAccess import CameraAccess
+from CameraAccess import CameraWorker
 import WirelessAccess
 import time
 import cv2

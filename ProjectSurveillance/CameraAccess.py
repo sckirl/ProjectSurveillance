@@ -3,7 +3,7 @@ from ultralytics import YOLO
 from PySide6.QtCore import QObject, Signal, Slot
 from PySide6.QtGui import QImage, QPixmap
 
-class ComputerVision(QObject):
+class CameraWorker(QObject):
     # Signals to send data back to the main UI thread
     frameUpdated = Signal(QPixmap)
     visionStatus = Signal(str)

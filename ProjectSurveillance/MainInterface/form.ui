@@ -31,7 +31,7 @@
        </property>
        <widget class="QWidget" name="CameraTab">
         <attribute name="title">
-         <string>Tab 1</string>
+         <string>Camera</string>
         </attribute>
         <widget class="QWidget" name="verticalLayoutWidget_2">
          <property name="geometry">
@@ -42,9 +42,16 @@
            <height>461</height>
           </rect>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QVBoxLayout" name="verticalLayoutCamera">
           <item>
-           <widget class="QGraphicsView" name="graphicsView"/>
+           <widget class="QGraphicsView" name="cameraView"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="readButton">
+            <property name="text">
+             <string>Read</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label">
@@ -54,18 +61,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox">
-            <item>
-             <property name="text">
-              <string>Serial 11520</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Serial 9600</string>
-             </property>
-            </item>
-           </widget>
+           <widget class="QComboBox" name="SerialComboBox"/>
           </item>
           <item>
            <widget class="QLabel" name="label_2">
@@ -75,25 +71,14 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox_2">
-            <item>
-             <property name="text">
-              <string>Camera 1</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Camera 2</string>
-             </property>
-            </item>
-           </widget>
+           <widget class="QComboBox" name="CameraComboBox"/>
           </item>
          </layout>
         </widget>
        </widget>
        <widget class="QWidget" name="MapTab">
         <attribute name="title">
-         <string>Tab 2</string>
+         <string>Map</string>
         </attribute>
         <widget class="QWidget" name="verticalLayoutWidget">
          <property name="geometry">
