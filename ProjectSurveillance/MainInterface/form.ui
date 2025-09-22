@@ -19,8 +19,8 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>671</width>
-      <height>521</height>
+      <width>688</width>
+      <height>520</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -33,48 +33,83 @@
         <attribute name="title">
          <string>Camera</string>
         </attribute>
-        <widget class="QWidget" name="verticalLayoutWidget_2">
-         <property name="geometry">
-          <rect>
-           <x>-1</x>
-           <y>-1</y>
-           <width>671</width>
-           <height>461</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayoutCamera">
-          <item>
-           <widget class="QGraphicsView" name="cameraView"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="readButton">
-            <property name="text">
-             <string>Read</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Choose Drone Serial</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="SerialComboBox"/>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Choose Camera Input</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="CameraComboBox"/>
-          </item>
-         </layout>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QVideoWidget" name="videoDisplayWidget" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>640</width>
+             <height>300</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>640</width>
+             <height>400</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="readButton">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Start Connection</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="maximumSize">
+            <size>
+             <width>10000</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Choose Drone Serial</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="SerialComboBox">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>50</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="maximumSize">
+            <size>
+             <width>10000</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Choose Camera Input</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="CameraComboBox">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>50</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
        <widget class="QWidget" name="MapTab">
         <attribute name="title">
@@ -131,6 +166,12 @@
    <class>QWebEngineView</class>
    <extends>QWidget</extends>
    <header location="global">QtWebEngineWidgets/QWebEngineView</header>
+  </customwidget>
+  <customwidget>
+   <class>QVideoWidget</class>
+   <extends>QWidget</extends>
+   <header>qvideowidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

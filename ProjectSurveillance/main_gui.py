@@ -38,11 +38,10 @@ class MainUI(QMainWindow):
         self.camera_combo_box = self.ui.findChild(QComboBox, "CameraComboBox")
         self.read_button = self.ui.findChild(QPushButton, "readButton")
         self.map_view = self.ui.findChild(QWebEngineView, "MapWebView")
-        self.layout = self.ui.findChild(QVBoxLayout, "verticalLayoutCamera")
         
         # Camera Setup
+        self.video_widget = self.ui.findChild(QVideoWidget, "videoDisplayWidget")
         self.capture_session = QMediaCaptureSession()
-        self.video_widget = QVideoWidget()
         self.capture_session.setVideoOutput(self.video_widget)
         
         if self.read_button:
@@ -99,14 +98,11 @@ class MainUI(QMainWindow):
         selectedValue = self.serial_combo_box.currentText()
         selectedCamera = self.camera_combo_box.currentIndex()
 
-        # self.camera = CameraAccess.CameraWorker(model_path="MODELS/HumanDetect.pt",
-                                                #camera_index=selectedCamera)
-                                            
         self.camera = QCamera(self.camera_devices[selectedCamera])
         self.capture_session.setCamera(self.camera)
 
-        self.capture_session.setVideoOutput(self.video_widget)
-        self.layout.addWidget(self.video_widget)
+        # self.capture_session.setVideoOutput(self.video_widget)
+        # self.layout.addWidget(self.video_widget)
 
         self.camera.start()
 

@@ -15,10 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWidgets import (QApplication, QComboBox, QGraphicsView, QGridLayout,
-    QLabel, QMainWindow, QPushButton, QSizePolicy,
-    QTabWidget, QToolBar, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QLabel,
+    QMainWindow, QPushButton, QSizePolicy, QTabWidget,
+    QToolBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -29,7 +30,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayoutWidget = QWidget(self.centralwidget)
         self.gridLayoutWidget.setObjectName(u"gridLayoutWidget")
-        self.gridLayoutWidget.setGeometry(QRect(10, 10, 671, 521))
+        self.gridLayoutWidget.setGeometry(QRect(10, 10, 688, 520))
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
@@ -37,41 +38,44 @@ class Ui_MainWindow(object):
         self.tabWidget.setObjectName(u"tabWidget")
         self.CameraTab = QWidget()
         self.CameraTab.setObjectName(u"CameraTab")
-        self.verticalLayoutWidget_2 = QWidget(self.CameraTab)
-        self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
-        self.verticalLayoutWidget_2.setGeometry(QRect(-1, -1, 671, 461))
-        self.verticalLayoutCamera = QVBoxLayout(self.verticalLayoutWidget_2)
-        self.verticalLayoutCamera.setObjectName(u"verticalLayoutCamera")
-        self.verticalLayoutCamera.setContentsMargins(0, 0, 0, 0)
-        self.cameraView = QGraphicsView(self.verticalLayoutWidget_2)
-        self.cameraView.setObjectName(u"cameraView")
+        self.verticalLayout_2 = QVBoxLayout(self.CameraTab)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.videoDisplayWidget = QVideoWidget(self.CameraTab)
+        self.videoDisplayWidget.setObjectName(u"videoDisplayWidget")
+        self.videoDisplayWidget.setMinimumSize(QSize(640, 300))
+        self.videoDisplayWidget.setMaximumSize(QSize(640, 400))
 
-        self.verticalLayoutCamera.addWidget(self.cameraView)
+        self.verticalLayout_2.addWidget(self.videoDisplayWidget)
 
-        self.readButton = QPushButton(self.verticalLayoutWidget_2)
+        self.readButton = QPushButton(self.CameraTab)
         self.readButton.setObjectName(u"readButton")
+        self.readButton.setMaximumSize(QSize(16777215, 30))
 
-        self.verticalLayoutCamera.addWidget(self.readButton)
+        self.verticalLayout_2.addWidget(self.readButton)
 
-        self.label = QLabel(self.verticalLayoutWidget_2)
+        self.label = QLabel(self.CameraTab)
         self.label.setObjectName(u"label")
+        self.label.setMaximumSize(QSize(10000, 30))
 
-        self.verticalLayoutCamera.addWidget(self.label)
+        self.verticalLayout_2.addWidget(self.label)
 
-        self.SerialComboBox = QComboBox(self.verticalLayoutWidget_2)
+        self.SerialComboBox = QComboBox(self.CameraTab)
         self.SerialComboBox.setObjectName(u"SerialComboBox")
+        self.SerialComboBox.setMaximumSize(QSize(16777215, 50))
 
-        self.verticalLayoutCamera.addWidget(self.SerialComboBox)
+        self.verticalLayout_2.addWidget(self.SerialComboBox)
 
-        self.label_2 = QLabel(self.verticalLayoutWidget_2)
+        self.label_2 = QLabel(self.CameraTab)
         self.label_2.setObjectName(u"label_2")
+        self.label_2.setMaximumSize(QSize(10000, 30))
 
-        self.verticalLayoutCamera.addWidget(self.label_2)
+        self.verticalLayout_2.addWidget(self.label_2)
 
-        self.CameraComboBox = QComboBox(self.verticalLayoutWidget_2)
+        self.CameraComboBox = QComboBox(self.CameraTab)
         self.CameraComboBox.setObjectName(u"CameraComboBox")
+        self.CameraComboBox.setMaximumSize(QSize(16777215, 50))
 
-        self.verticalLayoutCamera.addWidget(self.CameraComboBox)
+        self.verticalLayout_2.addWidget(self.CameraComboBox)
 
         self.tabWidget.addTab(self.CameraTab, "")
         self.MapTab = QWidget()
@@ -112,7 +116,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.readButton.setText(QCoreApplication.translate("MainWindow", u"Read", None))
+        self.readButton.setText(QCoreApplication.translate("MainWindow", u"Start Connection", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Choose Drone Serial", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Choose Camera Input", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Camera", None))
