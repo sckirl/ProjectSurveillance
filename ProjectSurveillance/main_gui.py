@@ -1,33 +1,79 @@
-<<<<<<< HEAD
-from CameraAccess import CameraAccess
-=======
+from PySide6.QtWidgets import *
+from PySide6.QtMultimedia import *
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtMultimediaWidgets import QVideoWidget
+from PySide6.QtCore import QFile
+from PySide6.QtWebEngineWidgets import QWebEngineView
+
+# QT Threading things
+from PySide6.QtCore import QFile, QThread, Slot
+from PySide6.QtGui import QPixmap
+
+import folium
+import io
+import sys
+from serial.tools import list_ports
+
+# Internal classes
+from DroneAccess import DroneWorker
 from CameraAccess import CameraWorker
->>>>>>> parent of 59b852e (updated interface)
-import WirelessAccess
-import time
-import cv2
-from ultralytics import YOLO
-from YOLOdetection import *
-from ultralytics.utils.plotting import Annotator, colors
-import DroneAccess
 
-# ---- Setup ----
-    
-NOTIFY_COUNT = 5
-LINE_Y = 600
+class MainUI(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        loader = QUiLoader()
+        ui_file = QFile("MainInterface/form.ui")
+        ui_file.open(QFile.ReadOnly)
+        self.camera = CameraWorker(model_path="MODELS/HumanDetect.pt",
+                                                camera_index=0)
+        self.ui = loader.load(ui_file, self)   # load UI
+        ui_file.close()
 
-model = YOLO("MODELS/HumanDetect.pt")
-drone = DroneAccess.Drone("/dev/tty.usbmodem0x80000001")
-object_history = {} 
-seenID = set()
-sent = True
-totalCount = 0
-lastCounted = -1 
+        # Start threadings babyyy
+        self.camera_thread = None
+        self.camera_worker = None
 
-def main():
-    cap = cv2.VideoCapture(1)
+        # Attach all the ui things and get all the ports
+        self.uiComponents()
 
-<<<<<<< HEAD
+        # Get all the coded things
+        self.getSerialPorts()
+        self.getCameraLabels()
+        self.getMap()
+        self.serial_combo_box.addItem("")
+
+    def uiComponents(self):
+        self.serial_combo_box = self.ui.findChild(QComboBox, "SerialComboBox")
+        self.camera_combo_box = self.ui.findChild(QComboBox, "CameraComboBox")
+        self.read_button = self.ui.findChild(QPushButton, "readButton")
+        self.map_view = self.ui.findChild(QWebEngineView, "MapWebView")
+        self.gyro_data_label = self.ui.findChild(QLabel, "gyroDataLabel")
+        
+        # Camera Setup
+        self.video_widget = self.ui.findChild(QLabel, "videoDisplayWidget")
+        
+        if self.read_button:
+            self.read_button.clicked.connect(self.startCameraConnection)
+
+    def startThreads(self):
+        self.drone_thread = None
+        self.drone_worker = None
+
+        self.camera_thread = None
+        self.camera_worker = None
+
+    def getSerialPorts(self):
+        if self.serial_combo_box:
+            self.serial_combo_box.clear() # Clear existing items
+            ports = list_ports.comports()
+            for port in ports:
+                self.serial_combo_box.addItem(port.device)
+
+    def getCameraLabels(self):
+        if self.camera_combo_box:
+            self.camera_combo_box.clear() # Clear existing items
+            self.camera_devices = QMediaDevices.videoInputs()
+
             if not self.camera_devices:
                 print("No camera devices found")
                 return
@@ -141,35 +187,10 @@ def main():
             print("Drone thread stopped.")
 
         self.read_button.setText("Start Connection")
-=======
-    if not cap.isOpened():
-        print("Error: Could not open video file.")
-        return
 
-    # --- Calculate target dimensions once ---
-    ret, firstFrame = cap.read()
-    if not ret:
-        print("Error: could not read the first frame.")
-        cap.release()
-        return
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break # End of video
-
-        result = model.predict(frame, conf=0.6, verbose=False)
-        annonated = drawAnnotator(frame, result[0])
-
-        """if result[0]:
-            drone.readGPS()"""
-
-        # --- Display the Results ---
-        cv2.imshow('Detect Human', annonated)
->>>>>>> parent of 59b852e (updated interface)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
 
 if __name__ == "__main__":
-    main()
+    app = QApplication([])
+    window = MainUI()
+    window.ui.show()
+    sys.exit(app.exec())
