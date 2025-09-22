@@ -31,11 +31,11 @@ class CameraWorker(QObject):
 
         while self.is_running:
             ret, frame = self.camera.read()
-            frame = cv2.resize(frame, (640, 480))
             if not ret:
                 self.is_running = False
                 continue
 
+            frame = cv2.resize(frame, (640, 480))
             # --- YOLO Detection ---
             results = self.model.predict(frame, verbose=False)
             annotated_frame = results[0].plot()
