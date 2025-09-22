@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7d262dde0559c64953608b8e441ba7a9 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_7d262dde0559c64953608b8e441ba7a9" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_7d262dde0559c64953608b8e441ba7a9 = L.map(
+                "map_7d262dde0559c64953608b8e441ba7a9",
+                {
+                    center: [-6.1754049, 106.827168],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 12,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_52eea032f676229cd17d4736ad972123 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_52eea032f676229cd17d4736ad972123.addTo(map_7d262dde0559c64953608b8e441ba7a9);
+        
+    
+            var marker_29fca5b5222a3692045205ddf05915c2 = L.marker(
+                [-6.1754, 106.8272],
+                {
+}
+            ).addTo(map_7d262dde0559c64953608b8e441ba7a9);
+        
+    
+        var popup_80065315ce647d4393043bbb4a6a0453 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5b42e3b3e9f6f5d0ce156afb9647d7a4 = $(`<div id="html_5b42e3b3e9f6f5d0ce156afb9647d7a4" style="width: 100.0%; height: 100.0%;">Monas (National Monument)</div>`)[0];
+                popup_80065315ce647d4393043bbb4a6a0453.setContent(html_5b42e3b3e9f6f5d0ce156afb9647d7a4);
+            
+        
+
+        marker_29fca5b5222a3692045205ddf05915c2.bindPopup(popup_80065315ce647d4393043bbb4a6a0453)
+        ;
+
+        
+    
+    
+            marker_29fca5b5222a3692045205ddf05915c2.bindTooltip(
+                `<div>
+                     Click for more info!
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_80e9696195685845174d0681d5ab98a2 = L.marker(
+                [-6.1256, 106.8009],
+                {
+}
+            ).addTo(map_7d262dde0559c64953608b8e441ba7a9);
+        
+    
+        var popup_99e2f76fea2eb46ed0803822492fd8d5 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1a395db6361543b3ff734e2716d37434 = $(`<div id="html_1a395db6361543b3ff734e2716d37434" style="width: 100.0%; height: 100.0%;">Ancol Dreamland</div>`)[0];
+                popup_99e2f76fea2eb46ed0803822492fd8d5.setContent(html_1a395db6361543b3ff734e2716d37434);
+            
+        
+
+        marker_80e9696195685845174d0681d5ab98a2.bindPopup(popup_99e2f76fea2eb46ed0803822492fd8d5)
+        ;
+
+        
+    
+    
+            marker_80e9696195685845174d0681d5ab98a2.bindTooltip(
+                `<div>
+                     Amusement Park
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_6eca6e7bac1e9f34445d19227cf8f409 = L.marker(
+                [-6.2297, 106.8094],
+                {
+}
+            ).addTo(map_7d262dde0559c64953608b8e441ba7a9);
+        
+    
+        var popup_0daeb49b7886c1c29c373a92fd862207 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_ed1c0dfe7106914e771565b7f87467c8 = $(`<div id="html_ed1c0dfe7106914e771565b7f87467c8" style="width: 100.0%; height: 100.0%;">Gelora Bung Karno Stadium</div>`)[0];
+                popup_0daeb49b7886c1c29c373a92fd862207.setContent(html_ed1c0dfe7106914e771565b7f87467c8);
+            
+        
+
+        marker_6eca6e7bac1e9f34445d19227cf8f409.bindPopup(popup_0daeb49b7886c1c29c373a92fd862207)
+        ;
+
+        
+    
+    
+            marker_6eca6e7bac1e9f34445d19227cf8f409.bindTooltip(
+                `<div>
+                     Main Stadium
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_3f97463fb09d51178bcb27244f345b3f = L.marker(
+                [-6.3025, 106.8927],
+                {
+}
+            ).addTo(map_7d262dde0559c64953608b8e441ba7a9);
+        
+    
+        var popup_13f8d2f5ea434826f5f428b842f278b3 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_f0776c1e73898a4093c5f13f7f5b362e = $(`<div id="html_f0776c1e73898a4093c5f13f7f5b362e" style="width: 100.0%; height: 100.0%;">Taman Mini Indonesia Indah</div>`)[0];
+                popup_13f8d2f5ea434826f5f428b842f278b3.setContent(html_f0776c1e73898a4093c5f13f7f5b362e);
+            
+        
+
+        marker_3f97463fb09d51178bcb27244f345b3f.bindPopup(popup_13f8d2f5ea434826f5f428b842f278b3)
+        ;
+
+        
+    
+    
+            marker_3f97463fb09d51178bcb27244f345b3f.bindTooltip(
+                `<div>
+                     Indonesian Culture Park
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>
