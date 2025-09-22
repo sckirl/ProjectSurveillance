@@ -15,7 +15,6 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QLabel,
     QMainWindow, QPushButton, QSizePolicy, QTabWidget,
@@ -40,10 +39,10 @@ class Ui_MainWindow(object):
         self.CameraTab.setObjectName(u"CameraTab")
         self.verticalLayout_2 = QVBoxLayout(self.CameraTab)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.videoDisplayWidget = QVideoWidget(self.CameraTab)
+        self.videoDisplayWidget = QLabel(self.CameraTab)
         self.videoDisplayWidget.setObjectName(u"videoDisplayWidget")
-        self.videoDisplayWidget.setMinimumSize(QSize(640, 300))
-        self.videoDisplayWidget.setMaximumSize(QSize(640, 400))
+        self.videoDisplayWidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.videoDisplayWidget.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_2.addWidget(self.videoDisplayWidget)
 
@@ -92,6 +91,12 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.MapWebView)
 
+        self.gyroDataLabel = QLabel(self.verticalLayoutWidget)
+        self.gyroDataLabel.setObjectName(u"gyroDataLabel")
+        self.gyroDataLabel.setMaximumSize(QSize(16777215, 50))
+
+        self.verticalLayout.addWidget(self.gyroDataLabel)
+
         self.MapRestart = QPushButton(self.verticalLayoutWidget)
         self.MapRestart.setObjectName(u"MapRestart")
 
@@ -108,7 +113,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -116,10 +121,12 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.videoDisplayWidget.setText(QCoreApplication.translate("MainWindow", u"Choose the camera input below!", None))
         self.readButton.setText(QCoreApplication.translate("MainWindow", u"Start Connection", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Choose Drone Serial", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Choose Camera Input", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Camera", None))
+        self.gyroDataLabel.setText(QCoreApplication.translate("MainWindow", u"X:- Y:- Z: -", None))
         self.MapRestart.setText(QCoreApplication.translate("MainWindow", u"Restart", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.MapTab), QCoreApplication.translate("MainWindow", u"Map", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
