@@ -17,14 +17,14 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QLabel,
-    QMainWindow, QPushButton, QSizePolicy, QTabWidget,
-    QToolBar, QVBoxLayout, QWidget)
+    QLineEdit, QMainWindow, QPushButton, QSizePolicy,
+    QTabWidget, QToolBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(700, 600)
+        MainWindow.resize(887, 710)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayoutWidget = QWidget(self.centralwidget)
@@ -33,8 +33,14 @@ class Ui_MainWindow(object):
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.tabWidget = QTabWidget(self.gridLayoutWidget)
+        self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
+        self.tabWidget.setGeometry(QRect(20, 20, 851, 671))
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
         self.CameraTab = QWidget()
         self.CameraTab.setObjectName(u"CameraTab")
         self.verticalLayout_2 = QVBoxLayout(self.CameraTab)
@@ -81,7 +87,7 @@ class Ui_MainWindow(object):
         self.MapTab.setObjectName(u"MapTab")
         self.verticalLayoutWidget = QWidget(self.MapTab)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(0, 0, 671, 491))
+        self.verticalLayoutWidget.setGeometry(QRect(0, 0, 831, 611))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -91,21 +97,45 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.MapWebView)
 
-        self.gyroDataLabel = QLabel(self.verticalLayoutWidget)
-        self.gyroDataLabel.setObjectName(u"gyroDataLabel")
-        self.gyroDataLabel.setMaximumSize(QSize(16777215, 50))
+        self.latitudeLbl = QLabel(self.verticalLayoutWidget)
+        self.latitudeLbl.setObjectName(u"latitudeLbl")
+        self.latitudeLbl.setMaximumSize(QSize(16777215, 20))
 
-        self.verticalLayout.addWidget(self.gyroDataLabel)
+        self.verticalLayout.addWidget(self.latitudeLbl)
 
-        self.MapRestart = QPushButton(self.verticalLayoutWidget)
-        self.MapRestart.setObjectName(u"MapRestart")
+        self.latitudeEdit = QLineEdit(self.verticalLayoutWidget)
+        self.latitudeEdit.setObjectName(u"latitudeEdit")
 
-        self.verticalLayout.addWidget(self.MapRestart)
+        self.verticalLayout.addWidget(self.latitudeEdit)
+
+        self.altitudeLbl = QLabel(self.verticalLayoutWidget)
+        self.altitudeLbl.setObjectName(u"altitudeLbl")
+        self.altitudeLbl.setMaximumSize(QSize(16777215, 20))
+
+        self.verticalLayout.addWidget(self.altitudeLbl)
+
+        self.altitudeEdit = QLineEdit(self.verticalLayoutWidget)
+        self.altitudeEdit.setObjectName(u"altitudeEdit")
+
+        self.verticalLayout.addWidget(self.altitudeEdit)
+
+        self.longitudeLbl = QLabel(self.verticalLayoutWidget)
+        self.longitudeLbl.setObjectName(u"longitudeLbl")
+        self.longitudeLbl.setMaximumSize(QSize(16777215, 20))
+
+        self.verticalLayout.addWidget(self.longitudeLbl)
+
+        self.longitudeEdit = QLineEdit(self.verticalLayoutWidget)
+        self.longitudeEdit.setObjectName(u"longitudeEdit")
+
+        self.verticalLayout.addWidget(self.longitudeEdit)
+
+        self.saveDatabase = QPushButton(self.verticalLayoutWidget)
+        self.saveDatabase.setObjectName(u"saveDatabase")
+
+        self.verticalLayout.addWidget(self.saveDatabase)
 
         self.tabWidget.addTab(self.MapTab, "")
-
-        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
-
         MainWindow.setCentralWidget(self.centralwidget)
         self.toolBar = QToolBar(MainWindow)
         self.toolBar.setObjectName(u"toolBar")
@@ -113,7 +143,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -126,8 +156,10 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"Choose Drone Serial", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Choose Camera Input", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Camera", None))
-        self.gyroDataLabel.setText(QCoreApplication.translate("MainWindow", u"X:- Y:- Z: -", None))
-        self.MapRestart.setText(QCoreApplication.translate("MainWindow", u"Restart", None))
+        self.latitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Latitude", None))
+        self.altitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Altitude", None))
+        self.longitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Longitude", None))
+        self.saveDatabase.setText(QCoreApplication.translate("MainWindow", u"Save", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.MapTab), QCoreApplication.translate("MainWindow", u"Map", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi

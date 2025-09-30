@@ -1,32 +1,46 @@
-import pyodbc
+import pymssql
 from datetime import datetime
+import random
 
-class SurveillanceDB:
-    def __init__(self, server="localhost,1433", 
-                 database="master", 
-                 username="sa", 
-                 password="N0t3431@lv"):
-        
-        self.conn = pyodbc.connect(
-            f"DRIVER={{ODBC Driver 18 for SQL Server}};"
-            f"SERVER={server};DATABASE={database};"
-            f"UID={username};PWD={password};"
-            f"Encrypt=yes; TrustServerCertificate=yes;"
-        )
+class DatabaseWorker:
+    def __init__(self, server="localhost", 
+                 port=1433, 
+                 user="sa", 
+                 password="N0t3431@lv", 
+                 database="master"):
+        self.conn = pymssql.connect(server=server, port=port, user=user, password=password, database=database)
         self.cursor = self.conn.cursor()
-        self.create_table()
 
-    def insert_coordinates(self, 
-                           record_id, 
-                           latitude, 
-                           longitude, 
-                           altitude, 
-                           img=None, 
-                           timestamp=datetime.now()):
-        """Insert a record with coordinates (and optional image)."""
+    def createTable(self):
         self.cursor.execute("""
-        INSERT INTO Surveillance (surveillanceID, surveillanceTime, surveillanceImg, latitude, longitude, altitude)
-        VALUES (?, ?, ?, ?, ?, ?)
+        IF OBJECT_ID('SurveillanceDB', 'U') IS NULL
+        CREATE TABLE SurveillanceDB (
+            surveillanceID CHAR(36) PRIMARY KEY,
+            surveillanceTime DATETIME,
+            surveillanceImg VARBINARY(MAX),
+            latitude VARCHAR(20),
+            longitude VARCHAR(20),
+            altitude VARCHAR(20)
+        )
+        """)
+        self.conn.commit()
+
+    def insertCoordinates(self, 
+                          latitude, 
+                          longitude, 
+                          altitude, 
+                          record_id=None,
+                          img=None, 
+                          timestamp=None):
+        
+        if record_id == None:
+            record_id = random.getrandbits(100)
+
+        if timestamp is None:
+            timestamp = datetime.now()
+        self.cursor.execute("""
+        INSERT INTO SurveillanceDB (surveillanceID, surveillanceTime, surveillanceImg, latitude, longitude, altitude)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """, (record_id, timestamp, img, latitude, longitude, altitude))
         self.conn.commit()
 
@@ -41,12 +55,7 @@ class SurveillanceDB:
 
 if __name__ == "__main__":
     db = SurveillanceDB()
-
-    # Insert example record with just coordinates
-    db.insert_coordinates("what", "123.3455", "3123.2344", "1233.23")
-
-    # Fetch all records
-    for row in db.fetch_all():
-        print(row)
-
+    db.createTable()
+    db.insertCoordinates("098", "324.3455", "55.2344", "234.23")
+    print(db.fetch_all())
     db.close()
