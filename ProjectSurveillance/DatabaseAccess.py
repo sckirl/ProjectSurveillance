@@ -1,6 +1,6 @@
 import pymssql
 from datetime import datetime
-import random
+import uuid
 
 class DatabaseWorker:
     def __init__(self, server="localhost", 
@@ -34,7 +34,7 @@ class DatabaseWorker:
                           timestamp=None):
         
         if record_id == None:
-            record_id = random.getrandbits(100)
+            record_id = str(uuid.uuid4())
 
         if timestamp is None:
             timestamp = datetime.now()
@@ -45,7 +45,7 @@ class DatabaseWorker:
         self.conn.commit()
 
     def fetch_all(self):
-        self.cursor.execute("SELECT surveillanceID, surveillanceTime, latitude, longitude, altitude FROM Surveillance")
+        self.cursor.execute("SELECT surveillanceID, surveillanceTime, latitude, longitude, altitude FROM SurveillanceDB")
         return self.cursor.fetchall()
 
     def close(self):
@@ -54,7 +54,7 @@ class DatabaseWorker:
 
 
 if __name__ == "__main__":
-    db = SurveillanceDB()
+    db = DatabaseWorker()
     db.createTable()
     db.insertCoordinates("098", "324.3455", "55.2344", "234.23")
     print(db.fetch_all())

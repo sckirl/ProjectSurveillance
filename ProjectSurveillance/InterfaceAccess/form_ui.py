@@ -15,7 +15,6 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QLabel,
     QLineEdit, QMainWindow, QPushButton, QSizePolicy,
     QTabWidget, QToolBar, QVBoxLayout, QWidget)
@@ -91,11 +90,10 @@ class Ui_MainWindow(object):
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.MapWebView = QWebEngineView(self.verticalLayoutWidget)
-        self.MapWebView.setObjectName(u"MapWebView")
-        self.MapWebView.setUrl(QUrl(u"about:blank"))
+        self.captureDisplayWidget = QLabel(self.verticalLayoutWidget)
+        self.captureDisplayWidget.setObjectName(u"captureDisplayWidget")
 
-        self.verticalLayout.addWidget(self.MapWebView)
+        self.verticalLayout.addWidget(self.captureDisplayWidget)
 
         self.latitudeLbl = QLabel(self.verticalLayoutWidget)
         self.latitudeLbl.setObjectName(u"latitudeLbl")
@@ -156,6 +154,7 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"Choose Drone Serial", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Choose Camera Input", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Camera", None))
+        self.captureDisplayWidget.setText(QCoreApplication.translate("MainWindow", u"Detection Image", None))
         self.latitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Latitude", None))
         self.altitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Altitude", None))
         self.longitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Longitude", None))

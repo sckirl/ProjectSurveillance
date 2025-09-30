@@ -137,11 +137,9 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QWebEngineView" name="MapWebView">
-         <property name="url">
-          <url>
-           <string>about:blank</string>
-          </url>
+        <widget class="QLabel" name="captureDisplayWidget">
+         <property name="text">
+          <string>Detection Image</string>
          </property>
         </widget>
        </item>
@@ -217,13 +215,6 @@
    </attribute>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebEngineView</class>
-   <extends>QWidget</extends>
-   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>
