@@ -7,7 +7,7 @@ class CameraWorker(QObject):
     # Signals to send data back to the main UI thread
     frameUpdated = Signal(QPixmap)
     visionStatus = Signal(str)
-    detectionOccurred = Signal(bytes, str) # New signal: (image_bytes, message)
+    detectionOccurred = Signal(bytes, str)
     finished = Signal()
 
     def __init__(self, model_path, camera_index):
@@ -15,44 +15,45 @@ class CameraWorker(QObject):
         self.model = YOLO(model_path)
         self.camera_index = camera_index
         self.is_running = False
-        self.camera = None
+        self.seen_ids = set()
 
     @Slot()
     def run(self):
-        """This method will run in the background thread."""
         self.is_running = True
         self.camera = cv2.VideoCapture(self.camera_index)
-
-        if not self.camera.isOpened():
-            self.visionStatus.emit(f"Error: Could not open camera {self.camera_index}.")
-            self.is_running = False
-            return
-            
-        self.visionStatus.emit("Camera feed started.")
-
+        self.visionStatus.emit("Camera feed starting...")
+        
         while self.is_running:
-            ret, frame = self.camera.read()
-            if not ret:
-                self.is_running = False
-                continue
+            success, frame = self.camera.read()
+
+            # Use model.track for a continuous stream of results with persistent tracking
+            results = self.model.track(source=frame, 
+                                                persist=True, 
+                                                verbose=False,
+                                                tracker='botsort.yaml',
+                                                conf=0.7)
             
-            resized_frame = cv2.resize(frame, (640, 480))
+            # Start with the original frame for annotations
+            annotated_frame = cv2.resize(results[0].plot(), (640, 480))
+            
+            # --- 1. Robustness: Check if tracking IDs exist before processing ---
+            # This `if` statement is the key to preventing crashes on empty frames.
+            if results[0].boxes.id is not None:
+                # --- 2. Draw the actual annotator to the screen ---
+                # The plot() method draws all boxes, labels, and IDs.
+                track_ids = results[0].boxes.id.cpu().numpy().astype(int)
 
-            # --- YOLO Detection ---
-            results = self.model.predict(resized_frame, verbose=False)
-            annotated_frame = results[0].plot()
-
-            # --- New: Check for detections and emit signal ---
-            if len(results[0].boxes) > 0:
-                # 1. Get detection notification
-                detection_message = f"Detection found: {len(results[0].boxes)} object(s)."
-                
-                # 2. Get screenshot and 3. Turn it into VARBINARY compatible format
-                success, buffer = cv2.imencode('.jpg', annotated_frame)
-                if success:
-                    image_bytes = buffer.tobytes()
-                    # Emit the signal with the image data and message
-                    self.detectionOccurred.emit(image_bytes, detection_message)
+                for track_id in track_ids:
+                    # Check if this is a new ID
+                    if track_id not in self.seen_ids:
+                        self.seen_ids.add(track_id)
+                        detection_message = f"New object detected! ID: {track_id}"
+                        
+                        # Encode the annotated frame for the signal
+                        success, buffer = cv2.imencode('.jpg', annotated_frame)
+                        if success:
+                            image_bytes = buffer.tobytes()
+                            self.detectionOccurred.emit(image_bytes, detection_message)
 
             # --- Convert Frame for Qt ---
             rgb_image = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
@@ -60,12 +61,8 @@ class CameraWorker(QObject):
             bytes_per_line = ch * w
             qt_image = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
             qt_pixmap = QPixmap.fromImage(qt_image)
-            
+        
             self.frameUpdated.emit(qt_pixmap)
-
-        self.camera.release()
-        self.visionStatus.emit("Camera feed stopped.")
-        self.finished.emit()
 
     def stop(self):
         """Signals the worker to stop running."""

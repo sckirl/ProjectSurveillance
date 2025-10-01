@@ -8,8 +8,12 @@ class DatabaseWorker:
                  user="sa", 
                  password="N0t3431@lv", 
                  database="master"):
-        self.conn = pymssql.connect(server=server, port=port, user=user, password=password, database=database)
-        self.cursor = self.conn.cursor()
+        
+        try: 
+            self.conn = pymssql.connect(server=server, port=port, user=user, password=password, database=database)
+            self.cursor = self.conn.cursor()
+        except Exception as e:
+            print("Connection can't be established, running without database...")
 
     def createTable(self):
         self.cursor.execute("""

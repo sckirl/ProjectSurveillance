@@ -67,8 +67,6 @@ class MainUI(QMainWindow):
 
         # Camera Setup
         self.video_widget = self.ui.findChild(QLabel, "videoDisplayWidget")
-        
-        # New: Add a QLabel in your .ui file with the name "captureDisplayWidget"
         self.capture_display = self.ui.findChild(QLabel, "captureDisplayWidget")
 
         if self.read_button:
@@ -117,10 +115,12 @@ class MainUI(QMainWindow):
     def startCameraConnection(self):
         # Stop any existing worker before starting a new one
         if self.camera_thread and self.camera_thread.isRunning():
+            print("Stopping previous camera thread...")
             self.camera_worker.stop()
             self.camera_thread.quit()
-            self.camera_thread.wait()
-
+            self.camera_thread.wait() # Wait for it to finish
+            print("Previous thread stopped.")
+            
         # 1. Create a QThread
         self.camera_thread = QThread()
         
@@ -189,7 +189,6 @@ class MainUI(QMainWindow):
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation
             ))
-
 
     # Cleanly stop the thread when the window is closed
     def closeEvent(self, event):
