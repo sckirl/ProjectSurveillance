@@ -16,6 +16,7 @@ import numpy as np
 # Internal classes
 from CameraAccess import CameraWorker
 from DatabaseAccess import DatabaseWorker
+from OSDAccess import OSDReader
 
 class MainUI(QMainWindow):
     def __init__(self):
@@ -37,6 +38,7 @@ class MainUI(QMainWindow):
                                        user="sa",
                                        password="N0t3431@lv",
                                        database="master")
+        self.osd_reader = OSDReader() 
         
         self.camera_thread = None
         self.camera_worker = None
@@ -275,6 +277,11 @@ class MainUI(QMainWindow):
     # New: This slot handles the detection signal
     @Slot(bytes, str)
     def handleDetection(self, image_data, message):
+
+        # 1. Run OCR on the captured image to get the latitude
+        extracted_latitude = self.osd_reader.read_latitude_from_image(image_data)
+        print(f"OCR Result - Latitude: {extracted_latitude}")
+
         """Saves detection data to DB and updates UI."""
         msgBox = QMessageBox()
         msgBox.warning(self, "Detection", "New Human ID Detected")
@@ -282,7 +289,7 @@ class MainUI(QMainWindow):
         # This logic is simplified to automatically save the detection.
         # The update button is now only for editing existing records.
         self.database.insertCoordinates(
-            latitude="N/A", 
+            latitude=extracted_latitude, 
             longitude="N/A", 
             altitude="N/A", 
             img=image_data
