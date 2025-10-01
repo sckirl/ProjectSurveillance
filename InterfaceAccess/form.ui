@@ -6,32 +6,32 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>887</width>
-    <height>710</height>
+    <width>900</width>
+    <height>720</height>
    </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>900</width>
+    <height>720</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>688</width>
-      <height>520</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout"/>
-   </widget>
+   <layout class="QFormLayout" name="formLayout">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout"/>
+    </item>
+   </layout>
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>851</width>
-      <height>671</height>
+      <x>4</x>
+      <y>-1</y>
+      <width>871</width>
+      <height>701</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -42,6 +42,9 @@
     </property>
     <property name="currentIndex">
      <number>0</number>
+    </property>
+    <property name="tabBarAutoHide">
+     <bool>false</bool>
     </property>
     <widget class="QWidget" name="CameraTab">
      <attribute name="title">
@@ -75,7 +78,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="databaseLbl">
         <property name="maximumSize">
          <size>
           <width>10000</width>
@@ -83,22 +86,15 @@
          </size>
         </property>
         <property name="text">
-         <string>Choose Drone Serial</string>
+         <string>Choose Database and Port</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SerialComboBox">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>50</height>
-         </size>
-        </property>
-       </widget>
+       <widget class="QLineEdit" name="databaseEdit"/>
       </item>
       <item>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="cameraLbl">
         <property name="maximumSize">
          <size>
           <width>10000</width>
@@ -122,9 +118,40 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="MapTab">
+    <widget class="QWidget" name="TableTab">
      <attribute name="title">
-      <string>Map</string>
+      <string>Database</string>
+     </attribute>
+     <widget class="QTableView" name="tableView">
+      <property name="geometry">
+       <rect>
+        <x>15</x>
+        <y>21</y>
+        <width>851</width>
+        <height>561</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loadBtn">
+      <property name="geometry">
+       <rect>
+        <x>400</x>
+        <y>620</y>
+        <width>100</width>
+        <height>32</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Load Details</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="DetailsTab">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <attribute name="title">
+      <string>Details</string>
      </attribute>
      <widget class="QWidget" name="verticalLayoutWidget">
       <property name="geometry">
@@ -140,6 +167,13 @@
         <widget class="QLabel" name="captureDisplayWidget">
          <property name="text">
           <string>Detection Image</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="MapWebView">
+         <property name="text">
+          <string>MapWebView</string>
          </property>
         </widget>
        </item>
@@ -192,9 +226,9 @@
         <widget class="QLineEdit" name="longitudeEdit"/>
        </item>
        <item>
-        <widget class="QPushButton" name="saveDatabase">
+        <widget class="QPushButton" name="updateBtn">
          <property name="text">
-          <string>Save</string>
+          <string>Update</string>
          </property>
         </widget>
        </item>
