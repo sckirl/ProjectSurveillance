@@ -231,7 +231,8 @@ class MainUI(QMainWindow):
         # 2. Create an instance of your CameraWorker
         selected_camera_index = self.camera_combo_box.currentIndex()
         self.camera_worker = CameraWorker(model_path="MODELS/HumanDetect.pt", 
-                                          camera_index=selected_camera_index)
+                                          camera_index=selected_camera_index, 
+                                          )
                                           
         # 3. Move the worker to the thread
         self.camera_worker.moveToThread(self.camera_thread)
@@ -274,7 +275,7 @@ class MainUI(QMainWindow):
         
     # New: This slot handles the detection signal
     @Slot(bytes, str)
-    def handleDetection(self, image_data, message):
+    def handleDetection(self, image_data, message, lat_text, lon_text):
         """Saves detection data to DB and updates UI."""
         msgBox = QMessageBox()
         msgBox.warning(self, "Detection", "New Human ID Detected")
@@ -282,11 +283,13 @@ class MainUI(QMainWindow):
         # This logic is simplified to automatically save the detection.
         # The update button is now only for editing existing records.
         self.database.insertCoordinates(
-            latitude="N/A", 
-            longitude="N/A", 
-            altitude="N/A", 
+            latitude=lat_text, 
+            longitude=lon_text, 
+            altitude="N/A", # Altitude is not from OCR, keeping as N/A
             img=image_data
         )
+
+        print(f"DATABASE INSERT: Lat='{lat_text}, Lon'{lon_text}")
         self.loadDatabaseData() # Refresh the table
         
         if self.capture_display:

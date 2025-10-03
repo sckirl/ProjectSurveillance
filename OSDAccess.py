@@ -4,17 +4,17 @@ import os
 import pytesseract
 
 # --- CONFIGURATION ---
-CAMERA_INDEX = "video3.mp4"
+CAMERA_INDEX = "Assets/OSDMoving.mov"
 FONT_DIR = "osd_font"
 
 # ROI akan disesuaikan secara otomatis berdasarkan ukuran frame
+# x, y, w, h
 ROIS = {
-    "latitude": (110, 120, 110, 23),
-    # Tambahkan ROI lain sesuai kebutuhan
+    "latitude": (25, 50, 200, 40),
+    "longitude": (25, 90, 200, 40)
 }
 
-# --- SETUP TESSERACT ---
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = r"wine /Volumes/VMs/pythonProjects/ProjectSurveillance/Assets/Tesseract/tesseract.exe"
 
 def get_frame_dimensions(cap):
     """Mendapatkan dimensi frame dari video"""
@@ -47,15 +47,12 @@ def preprocess_for_tesseract(image):
     if image.size == 0:
         return image
     
-    # Resize image jika terlalu kecil
-    if image.shape[0] < 30 or image.shape[1] < 30:
-        image = cv2.resize(image, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-    
     # Apply Gaussian blur untuk mengurangi noise
     blurred = cv2.GaussianBlur(image, (3, 3), 0)
     
     # Thresholding
-    _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    threshold_value = 200 # <-- YOU CAN TUNE THIS VALUE
+    _, thresh = cv2.threshold(blurred, threshold_value, 255, cv2.THRESH_BINARY)
     
     return thresh
 
@@ -162,20 +159,6 @@ def main():
     # Dapatkan dimensi frame
     frame_width, frame_height = get_frame_dimensions(cap)
     print(f"Video dimensions: {frame_width} x {frame_height}")
-    
-    # Sesuaikan ROI dengan dimensi frame
-    adjusted_rois = {}
-    for name, roi in ROIS.items():
-        adjusted_roi = adjust_roi_to_frame(roi, frame_width, frame_height)
-        adjusted_rois[name] = adjusted_roi
-        print(f"ROI {name}: Original {roi} -> Adjusted {adjusted_roi}")
-
-    # Jika ROI menjadi terlalu kecil, gunakan ROI default
-    for name, (x, y, w, h) in adjusted_rois.items():
-        if w < 10 or h < 10:
-            print(f"Warning: ROI {name} terlalu kecil, menggunakan ROI default")
-            # ROI default di tengah frame
-            adjusted_rois[name] = (frame_width//2 - 20, frame_height//2 - 15, 40, 30)
 
     print("Press 'q' to exit.")
     print("Press 'p' to pause and show debug info.")
@@ -192,12 +175,13 @@ def main():
                 continue
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.resize(gray, (680, 420))
         
         # Threshold dengan nilai yang lebih adaptif
         _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY)
 
         output_text = ""
-        for name, (x, y, w, h) in adjusted_rois.items():
+        for name, (x, y, w, h) in ROIS.items():
             # Ambil ROI dari frame
             roi_thresh = thresh[y:y+h, x:x+w]
             
@@ -205,18 +189,15 @@ def main():
                 text = "NO ROI"
                 print(f"Warning: Empty ROI for {name}")
             else:
-                # Coba template matching terlebih dahulu
+                """# Coba template matching terlebih dahulu
                 if font_templates:
                     text_manual = perform_ocr_on_region(roi_thresh, font_templates)
                 else:
-                    text_manual = ""
+                    text_manual = """""
                 
-                # Jika template matching gagal, gunakan Tesseract
-                if not text_manual or len(text_manual) < 2:
-                    text_tesseract = ocr_with_tesseract(roi_thresh)
-                    text = text_tesseract if text_tesseract else "NO TEXT"
-                else:
-                    text = text_manual
+
+                text_tesseract = ocr_with_tesseract(roi_thresh)
+                text = text_tesseract if text_tesseract else "NO TEXT"
 
             output_text += f"{name.capitalize()}: {text} | "
             
@@ -246,13 +227,13 @@ def main():
                 print("\n--- PAUSED - Press 'p' to continue ---")
             else:
                 # Tutup window ROI debug saat melanjutkan
-                for name in adjusted_rois.keys():
+                for name in ROIS.keys():
                     cv2.destroyWindow(f"ROI {name}")
         elif key == ord('r'):
             # Fitur recalibrate - tampilkan dimensi frame
             print(f"\nCurrent frame dimensions: {frame_width} x {frame_height}")
             print("Current ROIs:")
-            for name, roi in adjusted_rois.items():
+            for name, roi in ROIS.items():
                 print(f"  {name}: {roi}")
 
     cap.release()
