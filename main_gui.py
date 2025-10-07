@@ -1,10 +1,11 @@
 from PySide6.QtWidgets import *
 from PySide6.QtMultimedia import *
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtMultimediaWidgets import QVideoWidget
 from PySide6.QtCore import QFile, QThread, Slot, Qt
 from PySide6.QtGui import QPixmap, QStandardItemModel, QStandardItem
 from PySide6.QtWebEngineWidgets import QWebEngineView
+from PySide6.QtWebEngineCore import QWebEnginePage
+from PySide6.QtGui import QDesktopServices
 
 import folium
 import io
@@ -16,6 +17,23 @@ import numpy as np
 # Internal classes
 from CameraAccess import CameraWorker
 from DatabaseAccess import DatabaseWorker
+from MapAccess import MapWorker
+
+from PySide6.QtWebEngineCore import QWebEnginePage
+from PySide6.QtGui import QDesktopServices
+
+# ======= this handles all redirects to different browsers
+class WebEnginePage(QWebEnginePage):
+    """Custom QWebEnginePage to open links in the external browser."""
+    def acceptNavigationRequest(self, url, nav_type, is_main_frame):
+        # Check if the navigation request was triggered by a user clicking a link
+        if nav_type == QWebEnginePage.NavigationType.NavigationTypeLinkClicked:
+            # If it's a link click, open the URL in the system's default browser
+            QDesktopServices.openUrl(url)
+            # Tell the QWebEngineView *not* to navigate internally
+            return False
+        # For all other navigation types (like loading the initial map), proceed as normal
+        return super().acceptNavigationRequest(url, nav_type, is_main_frame)
 
 class MainUI(QMainWindow):
     def __init__(self):
@@ -31,12 +49,14 @@ class MainUI(QMainWindow):
         self.toSend = True
         self.current_record_id = None
 
+
         # ------ Internal Classes Initialization -------
         self.database = DatabaseWorker(server="localhost",
                                        port=1433, 
                                        user="sa",
                                        password="N0t3431@lv",
                                        database="master")
+        
         
         self.camera_thread = None
         self.camera_worker = None
@@ -46,7 +66,6 @@ class MainUI(QMainWindow):
 
         # Get all the coded things
         self.getCameraLabels()
-        self.getMap()
         self.loadDatabaseData() # get database data
 
     def uiComponents(self):
@@ -68,8 +87,11 @@ class MainUI(QMainWindow):
         self.altitude_edit = self.ui.findChild(QLineEdit, "altitudeEdit")
         self.update_button = self.ui.findChild(QPushButton, "updateBtn")
         self.map_view = self.ui.findChild(QWebEngineView, "MapWebView")
+        custom_page = WebEnginePage(self.map_view)
+        self.map_view.setPage(custom_page)
 
-        # Camera Setup
+        # Map Setup
+        self.mapWorker = MapWorker(self.map_view)
         # ----------- TRIGGER WHEN BUTTON IS CLICKED -----------
         if self.read_button:
             self.read_button.clicked.connect(self.startCameraConnection)
@@ -77,6 +99,7 @@ class MainUI(QMainWindow):
             self.load_button.clicked.connect(self.getChosenID)
         if self.update_button:
             self.update_button.clicked.connect(self.updateRecordFromDetails)
+    
     
     def loadDatabaseData(self):
         """Fetches all data from the database and populates the tableView."""
@@ -138,15 +161,22 @@ class MainUI(QMainWindow):
         self.longitude_edit.setText(str(longitude or ''))
         self.altitude_edit.setText(str(altitude or ''))
 
+        if latitude != "N/A" and longitude != "N/A":
+            self.mapWorker.update_map(latitude, longitude)
+
         if image_data:
             try:
+
                 np_arr = np.frombuffer(image_data, np.uint8)
                 img_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+                
                 if img_cv is None: raise ValueError("Image data could not be decoded.")
                 resized_img = cv2.resize(img_cv, (640, 480))
+
                 rgb_image = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
                 h, w, ch = rgb_image.shape
                 bytes_per_line = ch * w
+
                 qt_image = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
                 self.capture_display.setPixmap(QPixmap.fromImage(qt_image))
             except Exception as e:
@@ -194,27 +224,6 @@ class MainUI(QMainWindow):
             
             for camera in self.camera_devices:
                 self.camera_combo_box.addItem(camera.description()) 
-
-    def getMap(self):
-        # Get the map data from folium
-        jakarta_coords = [-6.2088, 106.8456]
-        m = folium.Map(location=jakarta_coords, zoom_start=15)
-
-        # Add a marker for Monas
-        folium.Marker(
-            location=[-6.1754, 106.8272],
-            popup="Monas",
-            tooltip="Click Here!"
-        ).add_to(m)
-
-        # Save map data to an in-memory buffer
-        data = io.BytesIO()
-        m.save(data, close_file=False)
-
-        
-        if self.map_view:
-            # Set the HTML from the in-memory buffer
-            self.map_view.setHtml(data.getvalue().decode())
 
     def startCameraConnection(self):
         # Stop any existing worker before starting a new one

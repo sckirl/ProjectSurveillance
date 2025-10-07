@@ -15,10 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QGridLayout,
-    QHeaderView, QLabel, QLineEdit, QMainWindow,
-    QPushButton, QSizePolicy, QTabWidget, QTableView,
-    QToolBar, QVBoxLayout, QWidget)
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QMainWindow, QPushButton, QSizePolicy, QTabWidget,
+    QTableView, QToolBar, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -96,15 +97,22 @@ class Ui_MainWindow(object):
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.captureDisplayWidget = QLabel(self.verticalLayoutWidget)
         self.captureDisplayWidget.setObjectName(u"captureDisplayWidget")
+        self.captureDisplayWidget.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout.addWidget(self.captureDisplayWidget)
+        self.horizontalLayout.addWidget(self.captureDisplayWidget)
 
-        self.MapWebView = QLabel(self.verticalLayoutWidget)
+        self.MapWebView = QWebEngineView(self.verticalLayoutWidget)
         self.MapWebView.setObjectName(u"MapWebView")
+        self.MapWebView.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout.addWidget(self.MapWebView)
+        self.horizontalLayout.addWidget(self.MapWebView)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.latitudeLbl = QLabel(self.verticalLayoutWidget)
         self.latitudeLbl.setObjectName(u"latitudeLbl")
@@ -159,7 +167,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -175,7 +183,7 @@ class Ui_MainWindow(object):
         self.loadBtn.setText(QCoreApplication.translate("MainWindow", u"Load Details", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.TableTab), QCoreApplication.translate("MainWindow", u"Database", None))
         self.captureDisplayWidget.setText(QCoreApplication.translate("MainWindow", u"Detection Image", None))
-        self.MapWebView.setText(QCoreApplication.translate("MainWindow", u"MapWebView", None))
+        self.MapWebView.setText(QCoreApplication.translate("MainWindow", u"Map Image", None))
         self.latitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Latitude", None))
         self.altitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Altitude", None))
         self.longitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Longitude", None))

@@ -41,7 +41,7 @@
      </sizepolicy>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="tabBarAutoHide">
      <bool>false</bool>
@@ -164,18 +164,28 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QLabel" name="captureDisplayWidget">
-         <property name="text">
-          <string>Detection Image</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="MapWebView">
-         <property name="text">
-          <string>MapWebView</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="captureDisplayWidget">
+           <property name="text">
+            <string>Detection Image</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWebEngineView" name="MapWebView">
+           <property name="text">
+            <string>Map Image</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLabel" name="latitudeLbl">
