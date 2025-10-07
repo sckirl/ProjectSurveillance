@@ -41,16 +41,19 @@ class MapWorker:
         # Create the map
         m = folium.Map(location=coords, zoom_start=16)
 
-        # Create the Google Maps URL and popup HTML
-        gmaps_url = f"https://www.google.com/maps/search/?api=1&query={coords[0]},{coords[1]}"
-        popup_html = f'<a href="{gmaps_url}" target="_blank">Open in Google Maps</a>'
+        try: 
+            # Create the Google Maps URL and popup HTML
+            gmaps_url = f"https://www.google.com/maps/search/?api=1&query={coords[0]},{coords[1]}"
+            popup_html = f'<a href="{gmaps_url}" target="_blank">Open in Google Maps</a>'
 
-        # Add a marker to the map
-        folium.Marker(
-            location=coords,
-            popup=popup_html,
-            tooltip="Click for options"
-        ).add_to(m)
+            # Add a marker to the map
+            folium.Marker(
+                location=coords,
+                popup=popup_html,
+                tooltip="Click fo sr options"
+            ).add_to(m)
+        except Exception as e:
+            print(e)
 
         # Save map data to an in-memory buffer and display it
         data = io.BytesIO()
