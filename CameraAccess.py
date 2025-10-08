@@ -1,5 +1,3 @@
-# CameraAccess.py (Corrected)
-
 import cv2
 from ultralytics import YOLO
 from PySide6.QtCore import QObject, Signal, Slot
@@ -76,6 +74,7 @@ class CameraWorker(QObject):
                 
                 self.detectionOccurred.emit(image_bytes, detection_message, lat_text, lon_text)
                 
+                # IMPORTANT: Update the master list with ALL IDs from the chosen frame
                 self.seen_ids.update(best_frame_data['ids'])
         
         # Clear the buffer to start fresh for the next interval
@@ -91,11 +90,7 @@ class CameraWorker(QObject):
             success, frame = self.camera.read()
             if not success: continue
 
-            results = self.model.track(source=frame, 
-                                       persist=True, 
-                                       verbose=False, 
-                                       tracker='botsort.yaml', 
-                                       conf=0.4)
+            results = self.model.track(source=frame, persist=True, verbose=False, tracker='botsort.yaml', conf=0.4)
             annotated_frame = cv2.resize(results[0].plot(), (640, 480))
 
             lx, ly, lw, lh = self.roi_latitude

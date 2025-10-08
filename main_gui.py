@@ -1,14 +1,12 @@
 from PySide6.QtWidgets import *
 from PySide6.QtMultimedia import *
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QThread, Slot, Qt
+from PySide6.QtCore import QFile, QThread, Slot, Qt, QTimer
 from PySide6.QtGui import QPixmap, QStandardItemModel, QStandardItem
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtGui import QDesktopServices
 
-import folium
-import io
 import sys
 from PySide6.QtGui import QImage
 import cv2
@@ -18,9 +16,6 @@ import numpy as np
 from CameraAccess import CameraWorker
 from DatabaseAccess import DatabaseWorker
 from MapAccess import MapWorker
-
-from PySide6.QtWebEngineCore import QWebEnginePage
-from PySide6.QtGui import QDesktopServices
 
 # ======= this handles all redirects to different browsers
 class WebEnginePage(QWebEnginePage):
@@ -72,15 +67,17 @@ class MainUI(QMainWindow):
         # Tab 1
         self.camera_combo_box = self.ui.findChild(QComboBox, "CameraComboBox")
         self.read_button = self.ui.findChild(QPushButton, "readButton")
+        self.capture_display = self.ui.findChild(QLabel, "captureDisplayWidget") # Get camera detection from here
+        self.video_widget = self.ui.findChild(QLabel, "videoDisplayWidget")
+
+        self.alertSetup()
 
         # Tab 2
-        self.capture_display = self.ui.findChild(QLabel, "captureDisplayWidget") # Get camera detection from here
         self.table_view = self.ui.findChild(QTableView, "tableView")
         self.load_button = self.ui.findChild(QPushButton, "loadBtn")
 
         # Tab 3
         self.details_tab = self.ui.findChild(QWidget, "DetailsTab")
-        self.video_widget = self.ui.findChild(QLabel, "videoDisplayWidget")
 
         self.latitude_edit = self.ui.findChild(QLineEdit, "latitudeEdit")
         self.longitude_edit = self.ui.findChild(QLineEdit, "longitudeEdit")
@@ -99,7 +96,25 @@ class MainUI(QMainWindow):
             self.load_button.clicked.connect(self.getChosenID)
         if self.update_button:
             self.update_button.clicked.connect(self.updateRecordFromDetails)
+
+    def alertSetup(self):
+        self.alert_label = QLabel("Manusia Terdeteksi", self.video_widget)
+        self.alert_label.setStyleSheet("""
+            background-color: rgba(200, 50, 50, 255);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 5px;
+        """)
+        self.alert_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.alert_label.adjustSize() # Adjust size to fit text
+        self.alert_label.hide() # Start with the label hidden
+        
+        self.sound_effect = QSoundEffect()
     
+    def test(self):
+        print("TODO: dismiss the alert")
     
     def loadDatabaseData(self):
         """Fetches all data from the database and populates the tableView."""
@@ -166,6 +181,7 @@ class MainUI(QMainWindow):
 
         if image_data:
             try:
+
                 np_arr = np.frombuffer(image_data, np.uint8)
                 img_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
                 
@@ -285,8 +301,17 @@ class MainUI(QMainWindow):
     @Slot(bytes, str)
     def handleDetection(self, image_data, message, lat_text, lon_text):
         """Saves detection data to DB and updates UI."""
-        msgBox = QMessageBox()
-        msgBox.warning(self, "Detection", "New Human ID Detected")
+        video_rect = self.video_widget.geometry()
+        label_size = self.alert_label.size()
+        x = (video_rect.width() - label_size.width()) // 2
+        y = (video_rect.height() - label_size.height()) // 2
+        self.alert_label.move(x, y)
+        self.alert_label.show()
+
+        # Hide the label after 3 seconds (3000 milliseconds)
+        QTimer.singleShot(3000, self.alert_label.hide)
+        QTimer.singleShot(3000, self.sound_effect.play)
+        self.sound_effect.play()
         
         # This logic is simplified to automatically save the detection.
         # The update button is now only for editing existing records.
