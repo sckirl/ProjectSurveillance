@@ -31,7 +31,7 @@
       <x>4</x>
       <y>-1</y>
       <width>891</width>
-      <height>711</height>
+      <height>731</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -176,7 +176,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QWebEngineView" name="MapWebView">
+          <widget class="QLabel" name="MapWebView">
            <property name="text">
             <string>Map Image</string>
            </property>

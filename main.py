@@ -70,8 +70,6 @@ class MainUI(QMainWindow):
         self.capture_display = self.ui.findChild(QLabel, "captureDisplayWidget") # Get camera detection from here
         self.video_widget = self.ui.findChild(QLabel, "videoDisplayWidget")
 
-        self.alertSetup()
-
         # Tab 2
         self.table_view = self.ui.findChild(QTableView, "tableView")
         self.load_button = self.ui.findChild(QPushButton, "loadBtn")
@@ -87,6 +85,8 @@ class MainUI(QMainWindow):
         custom_page = WebEnginePage(self.map_view)
         self.map_view.setPage(custom_page)
 
+        self.alertSetup()
+
         # Map Setup
         self.mapWorker = MapWorker(self.map_view)
         # ----------- TRIGGER WHEN BUTTON IS CLICKED -----------
@@ -98,23 +98,45 @@ class MainUI(QMainWindow):
             self.update_button.clicked.connect(self.updateRecordFromDetails)
 
     def alertSetup(self):
-        self.alert_label = QLabel("Manusia Terdeteksi", self.video_widget)
-        self.alert_label.setStyleSheet("""
-            background-color: rgba(200, 50, 50, 255);
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 5px;
+        self.alert_widget = QFrame(self.video_widget)
+        self.alert_widget.setStyleSheet("""
+            QFrame {
+                background-color: rgba(60, 60, 60, 220);
+                border: 1px solid #555;
+                border-radius: 8px;
+            }
+            QLabel {
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                background-color: transparent;
+                border: none;
+            }
+            QPushButton {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
         """)
-        self.alert_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.alert_label.adjustSize() # Adjust size to fit text
-        self.alert_label.hide() # Start with the label hidden
         
-        self.sound_effect = QSoundEffect()
-    
-    def test(self):
-        print("TODO: dismiss the alert")
+        # Create widgets for the alert
+        alert_message = QLabel("New Human Detected!")
+        save_button = QPushButton("Save to Database")
+        dismiss_button = QPushButton("Dismiss")
+        
+        # Create layouts
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(save_button)
+        button_layout.addWidget(dismiss_button)
+        
+        main_alert_layout = QVBoxLayout(self.alert_widget)
+        main_alert_layout.addWidget(alert_message, alignment=Qt.AlignmentFlag.AlignCenter)
+        main_alert_layout.addLayout(button_layout)
+        
+        # Connect button signals to methods
+        save_button.clicked.connect(self.save_detection)
+        dismiss_button.clicked.connect(self.dismiss_alert)
+        
+        self.alert_widget.hide()
     
     def loadDatabaseData(self):
         """Fetches all data from the database and populates the tableView."""
@@ -143,6 +165,43 @@ class MainUI(QMainWindow):
         self.table_view.setModel(model)
         self.table_view.resizeColumnsToContents()
         print("Table view updated.")
+
+    @Slot()
+    def dismiss_alert(self):
+        """Hides the alert and cancels the pending database save."""
+        print("Alert dismissed by user. Ignoring detection.")
+        self.alert_widget.hide()
+        # Clear the pending data so it doesn't get saved
+        self.pending_detection_data = None
+
+    # This method is renamed and simplified
+    def save_detection(self):
+        """Saves the detected data to the database when the user clicks 'Save'."""
+        self.alert_widget.hide()
+        if self.pending_detection_data:
+            print("User confirmed. Saving detection to database.")
+            image_data, lat_text, lon_text = self.pending_detection_data
+
+            self.database.insertCoordinates(
+                latitude=lat_text,
+                longitude=lon_text,
+                altitude="N/A",
+                img=image_data
+            )
+            print(f"DATABASE INSERT: Lat='{lat_text}', Lon='{lon_text}'")
+            self.loadDatabaseData()
+
+            if self.capture_display:
+                pixmap = QPixmap()
+                pixmap.loadFromData(image_data)
+                self.capture_display.setPixmap(pixmap.scaled(
+                    self.capture_display.size(),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation
+                ))
+            
+            # Clear the pending data after it's been saved
+            self.pending_detection_data = None
 
     # Replace your old getChosenID method with this one
     def getChosenID(self):
@@ -298,41 +357,19 @@ class MainUI(QMainWindow):
         self.video_widget.setPixmap(pixmap)
         
     # New: This slot handles the detection signal
-    @Slot(bytes, str)
+    @Slot(bytes, str, str, str)
     def handleDetection(self, image_data, message, lat_text, lon_text):
-        """Saves detection data to DB and updates UI."""
+        """Shows a dismissible alert for a new detection."""
+        # Store the data to be used if the user clicks 'Save'
+        self.pending_detection_data = (image_data, lat_text, lon_text)
+
+        # Position and show the alert widget
         video_rect = self.video_widget.geometry()
-        label_size = self.alert_label.size()
-        x = (video_rect.width() - label_size.width()) // 2
-        y = (video_rect.height() - label_size.height()) // 2
-        self.alert_label.move(x, y)
-        self.alert_label.show()
-
-        # Hide the label after 3 seconds (3000 milliseconds)
-        QTimer.singleShot(3000, self.alert_label.hide)
-        QTimer.singleShot(3000, self.sound_effect.play)
-        self.sound_effect.play()
-        
-        # This logic is simplified to automatically save the detection.
-        # The update button is now only for editing existing records.
-        self.database.insertCoordinates(
-            latitude=lat_text, 
-            longitude=lon_text, 
-            altitude="N/A", # Altitude is not from OCR, keeping as N/A
-            img=image_data
-        )
-
-        print(f"DATABASE INSERT: Lat='{lat_text}, Lon'{lon_text}")
-        self.loadDatabaseData() # Refresh the table
-        
-        if self.capture_display:
-            pixmap = QPixmap()
-            pixmap.loadFromData(image_data)
-            self.capture_display.setPixmap(pixmap.scaled(
-                self.capture_display.size(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
-            ))
+        alert_size = self.alert_widget.sizeHint() # Use sizeHint for auto-sized widgets
+        x = (video_rect.width() - alert_size.width()) // 2
+        y = (video_rect.height() - alert_size.height()) // 2
+        self.alert_widget.move(x, y)
+        self.alert_widget.show()
 
 
     # Cleanly stop the thread when the window is closed

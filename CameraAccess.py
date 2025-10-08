@@ -96,7 +96,7 @@ class CameraWorker(QObject):
             lx, ly, lw, lh = self.roi_latitude
             cv2.rectangle(annotated_frame, (lx, ly), (lx + lw, ly + lh), (0, 0, 255), 2)
             lonx, lony, lonw, lonh = self.roi_longitude
-            cv2.rectangle(annotated_frame, (lonx, lony), (lonx + lonw, lonh), (0, 0, 255), 2)
+            cv2.rectangle(annotated_frame, (lonx, lony), (lonx + lonw, lony + lonh), (0, 0, 255), 2)
             
             if results[0].boxes.id is not None:
                 track_ids = set(results[0].boxes.id.cpu().numpy().astype(int).flatten())

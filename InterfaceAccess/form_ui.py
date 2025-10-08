@@ -15,7 +15,6 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QGridLayout,
     QHBoxLayout, QHeaderView, QLabel, QLineEdit,
     QMainWindow, QPushButton, QSizePolicy, QTabWidget,
@@ -31,7 +30,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
-        self.tabWidget.setGeometry(QRect(4, -1, 891, 711))
+        self.tabWidget.setGeometry(QRect(4, -1, 891, 731))
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -105,7 +104,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.captureDisplayWidget)
 
-        self.MapWebView = QWebEngineView(self.verticalLayoutWidget)
+        self.MapWebView = QLabel(self.verticalLayoutWidget)
         self.MapWebView.setObjectName(u"MapWebView")
         self.MapWebView.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
