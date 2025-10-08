@@ -30,8 +30,8 @@
      <rect>
       <x>4</x>
       <y>-1</y>
-      <width>871</width>
-      <height>701</height>
+      <width>891</width>
+      <height>711</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -41,7 +41,7 @@
      </sizepolicy>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <property name="tabBarAutoHide">
      <bool>false</bool>

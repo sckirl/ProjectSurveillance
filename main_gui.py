@@ -166,7 +166,6 @@ class MainUI(QMainWindow):
 
         if image_data:
             try:
-
                 np_arr = np.frombuffer(image_data, np.uint8)
                 img_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
                 

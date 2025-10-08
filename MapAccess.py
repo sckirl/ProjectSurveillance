@@ -39,7 +39,7 @@ class MapWorker:
             coords = [-6.2088, 106.8456]
 
         # Create the map
-        m = folium.Map(location=coords, zoom_start=16)
+        m = folium.Map(location=coords, zoom_start=100)
 
         try: 
             # Create the Google Maps URL and popup HTML
@@ -50,7 +50,7 @@ class MapWorker:
             folium.Marker(
                 location=coords,
                 popup=popup_html,
-                tooltip="Click fo sr options"
+                tooltip="Click fo sr options",
             ).add_to(m)
         except Exception as e:
             print(e)
