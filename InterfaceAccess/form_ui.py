@@ -15,6 +15,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QGridLayout,
     QHBoxLayout, QHeaderView, QLabel, QLineEdit,
     QMainWindow, QPushButton, QSizePolicy, QTabWidget,
@@ -83,9 +84,6 @@ class Ui_MainWindow(object):
         self.tableView = QTableView(self.TableTab)
         self.tableView.setObjectName(u"tableView")
         self.tableView.setGeometry(QRect(15, 21, 851, 561))
-        self.loadBtn = QPushButton(self.TableTab)
-        self.loadBtn.setObjectName(u"loadBtn")
-        self.loadBtn.setGeometry(QRect(400, 620, 100, 32))
         self.tabWidget.addTab(self.TableTab, "")
         self.DetailsTab = QWidget()
         self.DetailsTab.setObjectName(u"DetailsTab")
@@ -104,9 +102,8 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.captureDisplayWidget)
 
-        self.MapWebView = QLabel(self.verticalLayoutWidget)
+        self.MapWebView = QWebEngineView(self.verticalLayoutWidget)
         self.MapWebView.setObjectName(u"MapWebView")
-        self.MapWebView.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout.addWidget(self.MapWebView)
 
@@ -151,6 +148,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.updateBtn)
 
+        self.deleteBtn = QPushButton(self.verticalLayoutWidget)
+        self.deleteBtn.setObjectName(u"deleteBtn")
+
+        self.verticalLayout.addWidget(self.deleteBtn)
+
         self.tabWidget.addTab(self.DetailsTab, "")
         self.formLayout = QFormLayout(self.centralwidget)
         self.formLayout.setObjectName(u"formLayout")
@@ -166,7 +168,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -179,14 +181,14 @@ class Ui_MainWindow(object):
         self.databaseLbl.setText(QCoreApplication.translate("MainWindow", u"Choose Database and Port", None))
         self.cameraLbl.setText(QCoreApplication.translate("MainWindow", u"Choose Camera Input", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Camera", None))
-        self.loadBtn.setText(QCoreApplication.translate("MainWindow", u"Load Details", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.TableTab), QCoreApplication.translate("MainWindow", u"Database", None))
         self.captureDisplayWidget.setText(QCoreApplication.translate("MainWindow", u"Detection Image", None))
-        self.MapWebView.setText(QCoreApplication.translate("MainWindow", u"Map Image", None))
+        self.MapWebView.setProperty(u"text", QCoreApplication.translate("MainWindow", u"Map Image", None))
         self.latitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Latitude", None))
         self.altitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Altitude", None))
         self.longitudeLbl.setText(QCoreApplication.translate("MainWindow", u"Longitude", None))
         self.updateBtn.setText(QCoreApplication.translate("MainWindow", u"Update", None))
+        self.deleteBtn.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.DetailsTab), QCoreApplication.translate("MainWindow", u"Details", None))
         self.toolBar.setWindowTitle(QCoreApplication.translate("MainWindow", u"toolBar", None))
     # retranslateUi

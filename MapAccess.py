@@ -20,11 +20,15 @@ class MapWorker:
         if not map_view_widget:
             raise ValueError("A QWebEngineView widget must be provided.")
         
-        self.map_view = map_view_widget
-        
-        # Set up the custom page to handle external link clicks
-        custom_page = WebEnginePage(self.map_view)
-        self.map_view.setPage(custom_page)
+        try: 
+            self.map_view = map_view_widget
+            
+            # Set up the custom page to handle external link clicks
+            custom_page = WebEnginePage(self.map_view)
+            self.map_view.setPage(custom_page)
+
+        except Exception as e:
+            print("Couldn't connect to the Maps API")
 
     def update_map(self, latitude, longitude):
         """Generates and displays a map for the given coordinates."""

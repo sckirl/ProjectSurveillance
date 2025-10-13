@@ -25,8 +25,8 @@ class CameraWorker(QObject):
         self.last_process_time = time.time()
         self.PROCESS_INTERVAL = 0.5
         
-        self.roi_latitude = (20, 400, 200, 40)
-        self.roi_longitude = (420, 400, 200, 40)
+        self.roi_latitude = (20, 390, 200, 30)
+        self.roi_longitude = (415, 390, 200, 30)
 
     def perform_ocr(self, frame, roi):
         x, y, w, h = roi

@@ -41,7 +41,7 @@
      </sizepolicy>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <property name="tabBarAutoHide">
      <bool>false</bool>
@@ -132,19 +132,6 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="loadBtn">
-      <property name="geometry">
-       <rect>
-        <x>400</x>
-        <y>620</y>
-        <width>100</width>
-        <height>32</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Load Details</string>
-      </property>
-     </widget>
     </widget>
     <widget class="QWidget" name="DetailsTab">
      <property name="enabled">
@@ -176,12 +163,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="MapWebView">
-           <property name="text">
+          <widget class="QWebEngineView" name="MapWebView">
+           <property name="text" stdset="0">
             <string>Map Image</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -242,6 +226,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="deleteBtn">
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
     </widget>
@@ -259,6 +250,13 @@
    </attribute>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
