@@ -18,38 +18,7 @@ class DatabaseWorker:
         except Exception as e:
             print(f"Connection can't be established: {e}")
 
-    def generate_next_id(self):
-        """Generates the next ID in sequence, preventing race conditions."""
-        if not self.is_connected: return None
-        
-        today_str = datetime.now().strftime('%d%m%Y')
-        
-        try:
-            # --- CHANGE 1: Add locking hints to make the read atomic ---
-            # This tells SQL Server to lock the row it's reading until the transaction is complete.
-            self.cursor.execute("""
-            SELECT TOP 1 surveillanceID 
-            FROM SurveillanceDB WITH (UPDLOCK, HOLDLOCK)
-            WHERE surveillanceID LIKE %s
-            ORDER BY surveillanceID DESC
-            """, (today_str + '%',))
-            
-            last_id = self.cursor.fetchone()
-            
-            if last_id:
-                last_sequence = int(last_id[0][8:])
-                new_sequence = last_sequence + 1
-            else:
-                new_sequence = 1
-                
-            new_id = f"{today_str}{new_sequence:04d}"
-            return new_id
-            
-        except Exception as e:
-            print(f"Error generating new ID: {e}")
-            self.conn.rollback() # Rollback the transaction on error
-            return None
-        
+
     def createTable(self):
         if not self.is_connected: return
         self.cursor.execute("""
@@ -64,6 +33,42 @@ class DatabaseWorker:
         )
         """)
         self.conn.commit()
+
+    def get_last_id(self):
+        # --- CHANGE 1: Add locking hints to make the read atomic ---
+        # This tells SQL Server to lock the row it's reading until the transaction is complete.
+        self.cursor.execute("""
+        SELECT TOP 1 surveillanceID 
+        FROM SurveillanceDB WITH (UPDLOCK, HOLDLOCK)
+        ORDER BY surveillanceID DESC
+        """)
+        
+        last_id = self.cursor.fetchone()
+
+        return last_id
+        
+    def generate_next_id(self):
+        """Generates the next ID in sequence, preventing race conditions."""
+        if not self.is_connected: return None
+        
+        today_str = datetime.now().strftime('%d%m%Y')
+        
+        try:
+            last_id = self.get_last_id()
+            
+            if last_id:
+                last_sequence = int(last_id[0][8:])
+                new_sequence = last_sequence + 1
+            else:
+                new_sequence = 1
+                
+            new_id = f"{today_str}{new_sequence:04d}"
+            return new_id
+            
+        except Exception as e:
+            print(f"Error generating new ID: {e}")
+            self.conn.rollback() # Rollback the transaction on error
+            return None
 
     def insertCoordinates(self, 
                           latitude, 
@@ -128,6 +133,25 @@ class DatabaseWorker:
         except Exception as e:
             print(f"Error fetching record by ID {record_id}: {e}")
             return None
+        
+
+    def delete_by_id(self, record_id):
+        if not self.is_connected: return False # Return False if not connected
+
+        try:
+            self.cursor.execute("""
+            DELETE FROM SurveillanceDB WHERE surveillanceID = %s
+            """, (record_id,)) # Using a tuple (record_id,) is safer
+
+            self.conn.commit() # <<< 1. THE CRITICAL FIX: Save the change to the database.
+
+            print(f"Successfully deleted record ID: {record_id}")
+            return True # <<< 2. RETURN TRUE to indicate success.
+
+        except Exception as e:
+            print(f"Failed to delete id: {record_id} with error: {e}")
+            self.conn.rollback() # It's good practice to roll back on error
+            return False # <<< 3. RETURN FALSE to indicate failure.
 
     def close(self):
         if not self.is_connected: return

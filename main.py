@@ -17,19 +17,6 @@ from CameraAccess import CameraWorker
 from DatabaseAccess import DatabaseWorker
 from MapAccess import MapWorker
 
-# ======= this handles all redirects to different browsers
-class WebEnginePage(QWebEnginePage):
-    """Custom QWebEnginePage to open links in the external browser."""
-    def acceptNavigationRequest(self, url, nav_type, is_main_frame):
-        # Check if the navigation request was triggered by a user clicking a link
-        if nav_type == QWebEnginePage.NavigationType.NavigationTypeLinkClicked:
-            # If it's a link click, open the URL in the system's default browser
-            QDesktopServices.openUrl(url)
-            # Tell the QWebEngineView *not* to navigate internally
-            return False
-        # For all other navigation types (like loading the initial map), proceed as normal
-        return super().acceptNavigationRequest(url, nav_type, is_main_frame)
-
 class MainUI(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -67,38 +54,39 @@ class MainUI(QMainWindow):
         # Tab 1
         self.camera_combo_box = self.ui.findChild(QComboBox, "CameraComboBox")
         self.read_button = self.ui.findChild(QPushButton, "readButton")
-        self.capture_display = self.ui.findChild(QLabel, "captureDisplayWidget") # Get camera detection from here
+        self.capture_display = self.ui.findChild(QLabel, "captureDisplayWidget")
         self.video_widget = self.ui.findChild(QLabel, "videoDisplayWidget")
 
         # Tab 2
         self.table_view = self.ui.findChild(QTableView, "tableView")
-        self.load_button = self.ui.findChild(QPushButton, "loadBtn")
 
         # Tab 3
         self.details_tab = self.ui.findChild(QWidget, "DetailsTab")
+        self.map_view = self.ui.findChild(QWebEngineView, "MapWebView")
+        self.mapWorker = MapWorker(self.map_view) # Map Setup
 
         self.latitude_edit = self.ui.findChild(QLineEdit, "latitudeEdit")
         self.longitude_edit = self.ui.findChild(QLineEdit, "longitudeEdit")
         self.altitude_edit = self.ui.findChild(QLineEdit, "altitudeEdit")
+
         self.update_button = self.ui.findChild(QPushButton, "updateBtn")
-        self.map_view = self.ui.findChild(QWebEngineView, "MapWebView")
-        custom_page = WebEnginePage(self.map_view)
-        self.map_view.setPage(custom_page)
+        self.delete_button = self.ui.findChild(QPushButton, "deleteBtn")
 
         self.alertSetup()
 
-        # Map Setup
-        self.mapWorker = MapWorker(self.map_view)
         # ----------- TRIGGER WHEN BUTTON IS CLICKED -----------
         if self.read_button:
             self.read_button.clicked.connect(self.startCameraConnection)
-        if self.load_button:
-            self.load_button.clicked.connect(self.getChosenID)
+        if self.table_view:
+            self.table_view.doubleClicked.connect(self.getChosenID)
         if self.update_button:
             self.update_button.clicked.connect(self.updateRecordFromDetails)
+        if self.delete_button:
+            self.delete_button.clicked.connect(self.deleteRecordFromDetails)
 
     def alertSetup(self):
         self.alert_widget = QFrame(self.video_widget)
+        self.alert_widget
         self.alert_widget.setStyleSheet("""
             QFrame {
                 background-color: rgba(60, 60, 60, 220);
@@ -119,24 +107,25 @@ class MainUI(QMainWindow):
         """)
         
         # Create widgets for the alert
-        alert_message = QLabel("New Human Detected!")
-        save_button = QPushButton("Save to Database")
-        dismiss_button = QPushButton("Dismiss")
+        alert_message = QLabel("Terdeteksi Manusia")
+        save_button = QPushButton("OK")
+        cancel_button = QPushButton("Hapus")
         
         # Create layouts
         button_layout = QHBoxLayout()
         button_layout.addWidget(save_button)
-        button_layout.addWidget(dismiss_button)
+        button_layout.addWidget(cancel_button)
         
         main_alert_layout = QVBoxLayout(self.alert_widget)
-        main_alert_layout.addWidget(alert_message, alignment=Qt.AlignmentFlag.AlignCenter)
+        main_alert_layout.addWidget(alert_message, alignment=Qt.AlignmentFlag.AlignTop)
+        main_alert_layout.addStretch(1)
         main_alert_layout.addLayout(button_layout)
-        
-        # Connect button signals to methods
-        save_button.clicked.connect(self.save_detection)
-        dismiss_button.clicked.connect(self.dismiss_alert)
-        
+
         self.alert_widget.hide()
+
+        # Connect button signals to methods
+        cancel_button.clicked.connect(self.delete_alert)
+        save_button.clicked.connect(self.alert_widget.hide)
     
     def loadDatabaseData(self):
         """Fetches all data from the database and populates the tableView."""
@@ -167,41 +156,43 @@ class MainUI(QMainWindow):
         print("Table view updated.")
 
     @Slot()
-    def dismiss_alert(self):
+    def delete_alert(self):
         """Hides the alert and cancels the pending database save."""
         print("Alert dismissed by user. Ignoring detection.")
+
+        last_id = self.database.get_last_id()
+        self.database.delete_by_id(last_id)
+
+        self.loadDatabaseData()
+
         self.alert_widget.hide()
         # Clear the pending data so it doesn't get saved
         self.pending_detection_data = None
 
     # This method is renamed and simplified
     def save_detection(self):
-        """Saves the detected data to the database when the user clicks 'Save'."""
-        self.alert_widget.hide()
-        if self.pending_detection_data:
-            print("User confirmed. Saving detection to database.")
-            image_data, lat_text, lon_text = self.pending_detection_data
+        image_data, lat_text, lon_text = self.pending_detection_data
 
-            self.database.insertCoordinates(
-                latitude=lat_text,
-                longitude=lon_text,
-                altitude="N/A",
-                img=image_data
-            )
-            print(f"DATABASE INSERT: Lat='{lat_text}', Lon='{lon_text}'")
-            self.loadDatabaseData()
+        self.database.insertCoordinates(
+            latitude=lat_text,
+            longitude=lon_text,
+            altitude="N/A",
+            img=image_data
+        )
+        print(f"DATABASE INSERT: Lat='{lat_text}', Lon='{lon_text}'")
+        self.loadDatabaseData()
 
-            if self.capture_display:
-                pixmap = QPixmap()
-                pixmap.loadFromData(image_data)
-                self.capture_display.setPixmap(pixmap.scaled(
-                    self.capture_display.size(),
-                    Qt.AspectRatioMode.KeepAspectRatio,
-                    Qt.TransformationMode.SmoothTransformation
-                ))
-            
-            # Clear the pending data after it's been saved
-            self.pending_detection_data = None
+        if self.capture_display:
+            pixmap = QPixmap()
+            pixmap.loadFromData(image_data)
+            self.capture_display.setPixmap(pixmap.scaled(
+                self.capture_display.size(),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            ))
+        
+        # Clear the pending data after it's been saved
+        self.pending_detection_data = None
 
     # Replace your old getChosenID method with this one
     def getChosenID(self):
@@ -217,7 +208,7 @@ class MainUI(QMainWindow):
         if not id_item:
             QMessageBox.critical(self, "Error", "Could not retrieve ID from the selected row.")
             return
-        
+
         # Get the data from current selected ID
         self.current_record_id = id_item.text()
         print(f"Loading details for ID: {self.current_record_id}")
@@ -240,7 +231,6 @@ class MainUI(QMainWindow):
 
         if image_data:
             try:
-
                 np_arr = np.frombuffer(image_data, np.uint8)
                 img_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
                 
@@ -258,14 +248,28 @@ class MainUI(QMainWindow):
                 self.capture_display.setText("Error: Could not load image.")
         else:
             self.capture_display.setText("No image available for this record.")
-        
+
         if self.details_tab:
             self.ui.tabWidget.setCurrentWidget(self.details_tab)
+
+    def deleteRecordFromDetails(self):
+        if not self.current_record_id:
+            QMessageBox.warning(self, "No Record Loaded", "Please double click the table to choose record")
+            return
+        
+        # Delete and refresh
+        success = self.database.delete_by_id(self.current_record_id)
+
+        if success:
+            QMessageBox.information(self, "Success", f"Deleted id: {self.current_record_id} ")
+            self.loadDatabaseData() # Refresh the table view to show the new data
+        else:
+            QMessageBox.critical(self, "Error", "Failed to delete the record in the database.")
 
     def updateRecordFromDetails(self):
         """Saves the data from the Details tab back to the database."""
         if not self.current_record_id:
-            QMessageBox.warning(self, "No Record Loaded", "Please use the 'Load' button to select a record first.")
+            QMessageBox.warning(self, "No Record Loaded", "Please double click the table to choose record")
             return
 
         # Get the new values from the QLineEdit widgets
@@ -313,7 +317,7 @@ class MainUI(QMainWindow):
         
         # 2. Create an instance of your CameraWorker
         selected_camera_index = self.camera_combo_box.currentIndex()
-        self.camera_worker = CameraWorker(model_path="MODELS/HumanDetect.pt", 
+        self.camera_worker = CameraWorker(model_path="MODELS/HumanThermal100.pt", 
                                           camera_index=selected_camera_index, 
                                           )
                                           
@@ -360,7 +364,6 @@ class MainUI(QMainWindow):
     @Slot(bytes, str, str, str)
     def handleDetection(self, image_data, message, lat_text, lon_text):
         """Shows a dismissible alert for a new detection."""
-        # Store the data to be used if the user clicks 'Save'
         self.pending_detection_data = (image_data, lat_text, lon_text)
 
         # Position and show the alert widget
@@ -371,6 +374,9 @@ class MainUI(QMainWindow):
         self.alert_widget.move(x, y)
         self.alert_widget.show()
 
+        
+
+        self.save_detection()
 
     # Cleanly stop the thread when the window is closed
     def closeEvent(self, event):
