@@ -41,43 +41,38 @@ class CameraWorker(QObject):
         return cleaned_text if cleaned_text else "N/A"
 
     def process_detection_buffer(self):
+        # 1. Exit early if there's nothing to do
         if not self.detection_buffer:
             return
 
-        best_frame_data = None
-        max_new_ids_count = 0
+        # 2. Aggregate all unique object IDs detected during the interval
+        all_ids_in_interval = set().union(*(data['ids'] for data in self.detection_buffer))
 
-        # Find the frame in the buffer with the most NEW IDs
-        for data in self.detection_buffer:
-            # Correctly calculate the set of new IDs for this frame
-            new_ids = data['ids'] - self.seen_ids
+        # 3. Figure out which of those IDs are actually new
+        newly_detected_ids = all_ids_in_interval - self.seen_ids
+
+        # 4. If there are new IDs, create and send one consolidated alert
+        if newly_detected_ids:
+            # Use the most recent frame's data for the alert image and OCR
+            latest_frame_data = self.detection_buffer[-1]
             
-            # If this frame has more new IDs than any we've seen so far, it's the new best one
-            if len(new_ids) > max_new_ids_count:
-                max_new_ids_count = len(new_ids)
-                best_frame_data = data
+            # Perform OCR on the original, clean frame for accuracy
+            lat_text = self.perform_ocr(latest_frame_data['original_frame'], self.roi_latitude)
+            lon_text = self.perform_ocr(latest_frame_data['original_frame'], self.roi_longitude)
 
-        # If we found a best frame that contains at least one new ID, process it
-        if best_frame_data and max_new_ids_count > 0:
-            print(f"Found a best frame with {max_new_ids_count} new ID(s).")
-            
-            # Correctly CALL the OCR function on the clean, original frame
-            lat_text = self.perform_ocr(best_frame_data['original_frame'], self.roi_latitude)
-            lon_text = self.perform_ocr(best_frame_data['annotated_frame'], self.roi_longitude)
-
-            success, buffer = cv2.imencode('.jpg', best_frame_data['annotated_frame'])
+            # Prepare the annotated image for the alert
+            success, buffer = cv2.imencode('.jpg', latest_frame_data['annotated_frame'])
             if success:
                 image_bytes = buffer.tobytes()
-                # Get the final set of new IDs to include in the message
-                final_new_ids = best_frame_data['ids'] - self.seen_ids
-                detection_message = f"Detected {len(final_new_ids)} new object(s). IDs: {list(final_new_ids)}"
+                detection_message = f"Detected {len(newly_detected_ids)} new object(s). IDs: {list(newly_detected_ids)}"
                 
+                # Emit a SINGLE signal for all new detections in this interval
                 self.detectionOccurred.emit(image_bytes, detection_message, lat_text, lon_text)
                 
-                # IMPORTANT: Update the master list with ALL IDs from the chosen frame
-                self.seen_ids.update(best_frame_data['ids'])
+                # IMPORTANT: Update the master list with all IDs found in this interval
+                self.seen_ids.update(all_ids_in_interval)
         
-        # Clear the buffer to start fresh for the next interval
+        # 5. Clear the buffer to start fresh for the next interval
         self.detection_buffer.clear()
 
     @Slot()

@@ -369,7 +369,7 @@ class MainUI(QMainWindow):
         
         # 2. Create an instance of your CameraWorker
         selected_camera_index = self.camera_combo_box.currentIndex()
-        self.camera_worker = CameraWorker(model_path="MODELS/HumanThermal100.pt", 
+        self.camera_worker = CameraWorker(model_path="MODELS/HumanDetect.pt", 
                                           camera_index=selected_camera_index, 
                                           )
                                           
