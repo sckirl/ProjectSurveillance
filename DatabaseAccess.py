@@ -3,11 +3,11 @@ from datetime import datetime
 import uuid
 
 class DatabaseWorker:
-    def __init__(self, server="localhost", 
-                 port=1433, 
-                 user="sa", 
-                 password="N0t3431@lv", 
-                 database="master"):
+    def __init__(self, server, 
+                 port, 
+                 user, 
+                 password, 
+                 database):
         
         self.is_connected = False
         try: 
