@@ -132,5 +132,9 @@ class CameraWorker(QObject):
             qt_pixmap = QPixmap.fromImage(qt_image)
             self.frameUpdated.emit(qt_pixmap)
 
+
     def stop(self):
         self.is_running = False
+        # Add camera release
+        if hasattr(self, 'camera') and self.camera.isOpened():
+            self.camera.release()
