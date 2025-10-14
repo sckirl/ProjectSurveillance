@@ -15,9 +15,11 @@ class DatabaseWorker:
             self.cursor = self.conn.cursor()
             self.is_connected = True
             print("Database connection successful.")
+            
         except Exception as e:
             print(f"Connection can't be established: {e}")
-
+            print(f"Check if the database is running")
+            self.is_connected = False
 
     def createTable(self):
         if not self.is_connected: return
@@ -38,9 +40,9 @@ class DatabaseWorker:
         # --- CHANGE 1: Add locking hints to make the read atomic ---
         # This tells SQL Server to lock the row it's reading until the transaction is complete.
         self.cursor.execute("""
-        SELECT TOP 1 surveillanceID 
-        FROM SurveillanceDB WITH (UPDLOCK, HOLDLOCK)
-        ORDER BY surveillanceID DESC
+            SELECT TOP 1 surveillanceID 
+            FROM SurveillanceDB WITH (UPDLOCK, HOLDLOCK)
+            ORDER BY surveillanceID DESC
         """)
         
         last_id = self.cursor.fetchone()

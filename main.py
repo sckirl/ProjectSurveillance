@@ -1,11 +1,9 @@
 from PySide6.QtWidgets import *
 from PySide6.QtMultimedia import *
+from PySide6.QtGui import *
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QThread, Slot, Qt, QTimer
-from PySide6.QtGui import QPixmap, QStandardItemModel, QStandardItem
+from PySide6.QtCore import QFile, QThread, Slot, Qt, QTimer, QEvent
 from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWebEngineCore import QWebEnginePage
-from PySide6.QtGui import QDesktopServices
 
 import sys
 from PySide6.QtGui import QImage
@@ -31,7 +29,6 @@ class MainUI(QMainWindow):
         self.toSend = True
         self.current_record_id = None
 
-
         # ------ Internal Classes Initialization -------
         self.database = DatabaseWorker(server="localhost",
                                        port=1433, 
@@ -51,16 +48,22 @@ class MainUI(QMainWindow):
         self.loadDatabaseData() # get database data
 
     def uiComponents(self):
-        # Tab 1
+        # ============ Tab 1
         self.camera_combo_box = self.ui.findChild(QComboBox, "CameraComboBox")
+        self.is_detection_paused = False
         self.read_button = self.ui.findChild(QPushButton, "readButton")
         self.capture_display = self.ui.findChild(QLabel, "captureDisplayWidget")
         self.video_widget = self.ui.findChild(QLabel, "videoDisplayWidget")
+        self.video_widget.installEventFilter(self)
 
-        # Tab 2
+        self.overlay_widget = QLabel(self.video_widget)
+        self.overlay_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.overlay_widget.hide() # Hide it initially
+
+        # ============ Tab 2
         self.table_view = self.ui.findChild(QTableView, "tableView")
 
-        # Tab 3
+        # ============ Tab 3
         self.details_tab = self.ui.findChild(QWidget, "DetailsTab")
         self.map_view = self.ui.findChild(QWebEngineView, "MapWebView")
         self.mapWorker = MapWorker(self.map_view) # Map Setup
@@ -89,7 +92,7 @@ class MainUI(QMainWindow):
         self.alert_widget
         self.alert_widget.setStyleSheet("""
             QFrame {
-                background-color: rgba(60, 60, 60, 220);
+                background-color: rgba(60, 0, 0, 220);
                 border: 1px solid #555;
                 border-radius: 8px;
             }
@@ -126,6 +129,55 @@ class MainUI(QMainWindow):
         # Connect button signals to methods
         cancel_button.clicked.connect(self.delete_alert)
         save_button.clicked.connect(self.alert_widget.hide)
+
+    def eventFilter(self, obj, event):
+        if obj is self.video_widget and event.type() == QEvent.Type.MouseButtonPress:
+            self.toggle_detection_pause()
+            return True # Event was handled
+        return super().eventFilter(obj, event)
+
+    def toggle_detection_pause(self):
+        """Toggles the detection paused state and updates the UI."""
+        self.is_detection_paused = not self.is_detection_paused
+        
+        if self.is_detection_paused:
+            print("Detection and alerts PAUSED.")
+            self.update_overlay("❚❚", 100) # Pause symbol
+            self.overlay_widget.show()
+        else:
+            print("Detection and alerts RESUMED.")
+            self.update_overlay("▶", 120) # Play symbol
+            # Use a QTimer to hide the play symbol after a moment
+            QTimer.singleShot(700, self.overlay_widget.hide)
+
+    def update_overlay(self, text, font_size):
+        """Creates and sets the pixmap for the overlay icon."""
+        pixmap = QPixmap(200, 200)
+        pixmap.fill(Qt.GlobalColor.transparent)
+        
+        painter = QPainter(pixmap)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        
+        # Draw a semi-transparent background circle
+        painter.setBrush(Qt.GlobalColor.black)
+        painter.setOpacity(0.6)
+        painter.drawEllipse(0, 0, 200, 200)
+
+        # Draw the text icon
+        painter.setPen(Qt.GlobalColor.white)
+        painter.setOpacity(1.0)
+        font = QFont("Arial", font_size, QFont.Weight.Bold)
+        painter.setFont(font)
+        painter.drawText(pixmap.rect(), Qt.AlignmentFlag.AlignCenter, text)
+        painter.end()
+
+        self.overlay_widget.setPixmap(pixmap)
+        self.overlay_widget.resize(200, 200)
+        # Center the overlay
+        self.overlay_widget.move(
+            (self.video_widget.width() - 200) // 2,
+            (self.video_widget.height() - 200) // 2
+        )
     
     def loadDatabaseData(self):
         """Fetches all data from the database and populates the tableView."""
@@ -235,7 +287,7 @@ class MainUI(QMainWindow):
                 img_cv = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
                 
                 if img_cv is None: raise ValueError("Image data could not be decoded.")
-                resized_img = cv2.resize(img_cv, (640, 480))
+                resized_img = cv2.resize(img_cv, (480, 320))
 
                 rgb_image = cv2.cvtColor(resized_img, cv2.COLOR_BGR2RGB)
                 h, w, ch = rgb_image.shape
@@ -363,6 +415,9 @@ class MainUI(QMainWindow):
     # New: This slot handles the detection signal
     @Slot(bytes, str, str, str)
     def handleDetection(self, image_data, message, lat_text, lon_text):
+        if self.is_detection_paused:
+            return # Do nothing if detection is paused
+
         """Shows a dismissible alert for a new detection."""
         self.pending_detection_data = (image_data, lat_text, lon_text)
 
@@ -370,12 +425,10 @@ class MainUI(QMainWindow):
         video_rect = self.video_widget.geometry()
         alert_size = self.alert_widget.sizeHint() # Use sizeHint for auto-sized widgets
         x = (video_rect.width() - alert_size.width()) // 2
-        y = (video_rect.height() - alert_size.height()) // 2
+        y = 0
         self.alert_widget.move(x, y)
         self.alert_widget.show()
-
         
-
         self.save_detection()
 
     # Cleanly stop the thread when the window is closed
