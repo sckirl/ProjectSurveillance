@@ -4,3 +4,4 @@ Assets/
 ./ArduinoTest/
 ._*
 settings.json
+.env
