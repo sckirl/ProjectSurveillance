@@ -438,10 +438,16 @@ class MainUI(QMainWindow):
 
     # Cleanly stop the thread when the window is closed
     def closeEvent(self, event):
+        print("Closing window...")
         if self.camera_thread and self.camera_thread.isRunning():
             self.camera_worker.stop()
             self.camera_thread.quit()
             self.camera_thread.wait()
+        
+        # Add database cleanup
+        if hasattr(self, 'database') and self.database.is_connected:
+            self.database.close()
+        
         event.accept()
 
 if __name__ == "__main__":

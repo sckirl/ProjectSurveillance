@@ -3,3 +3,4 @@ Assets/
 .venv/
 ./ArduinoTest/
 ._*
+settings.json
