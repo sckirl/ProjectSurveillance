@@ -1,3 +1,12 @@
+import sys
+import os
+from PySide6.QtGui import QImage
+import cv2
+import numpy as np
+from dotenv import load_dotenv
+load_dotenv()
+
+# ========= Import PyQT Stuff
 from PySide6.QtWidgets import *
 from PySide6.QtMultimedia import *
 from PySide6.QtGui import *
@@ -5,12 +14,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QThread, Slot, Qt, QTimer, QEvent
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
-import sys
-from PySide6.QtGui import QImage
-import cv2
-import numpy as np
-
-# Internal classes
+# ========== Internal classes
 from CameraAccess import CameraWorker
 from DatabaseAccess import DatabaseWorker
 from MapAccess import MapWorker
@@ -21,7 +25,7 @@ class MainUI(QMainWindow):
 
         # ------ Necessary PySide6 things, to load from Designer .ui file ------
         loader = QUiLoader()
-        ui_file = QFile("InterfaceAccess/form.ui")
+        ui_file = QFile(os.getenv("INTERFACE"))
         ui_file.open(QFile.ReadOnly)
         
         self.ui = loader.load(ui_file, self)   # load UI
@@ -30,11 +34,11 @@ class MainUI(QMainWindow):
         self.current_record_id = None
 
         # ------ Internal Classes Initialization -------
-        self.database = DatabaseWorker(server="localhost",
-                                       port=1433, 
-                                       user="sa",
-                                       password="N0t3431@lv",
-                                       database="master")
+        self.database = DatabaseWorker(server=os.getenv("SERVER_LOCATION"),
+                                       port=os.getenv("SERVER_PORT"), 
+                                       user=os.getenv("SERVER_USER"),
+                                       password=os.getenv("SERVER_PASSWORD"),
+                                       database=os.getenv("DATABASE_NAME"))
         
         
         self.camera_thread = None
@@ -89,10 +93,9 @@ class MainUI(QMainWindow):
 
     def alertSetup(self):
         self.alert_widget = QFrame(self.video_widget)
-        self.alert_widget
         self.alert_widget.setStyleSheet("""
             QFrame {
-                background-color: rgba(60, 0, 0, 220);
+                background-color: rgba(0, 0, 60, 220);
                 border: 1px solid #555;
                 border-radius: 8px;
             }
@@ -172,11 +175,11 @@ class MainUI(QMainWindow):
         painter.end()
 
         self.overlay_widget.setPixmap(pixmap)
-        self.overlay_widget.resize(200, 200)
+        self.overlay_widget.resize(640, 200)
         # Center the overlay
         self.overlay_widget.move(
-            (self.video_widget.width() - 200) // 2,
-            (self.video_widget.height() - 200) // 2
+            (self.video_widget.width() - self.overlay_widget.width()) // 2,
+            (self.video_widget.height() - self.overlay_widget.height()) // 2
         )
     
     def loadDatabaseData(self):
@@ -369,9 +372,9 @@ class MainUI(QMainWindow):
         
         # 2. Create an instance of your CameraWorker
         selected_camera_index = self.camera_combo_box.currentIndex()
-        self.camera_worker = CameraWorker(model_path="MODELS/HumanDetect.pt", 
+        self.camera_worker = CameraWorker(model_path=os.getenv("DETECTION_MODEL"), 
                                           camera_index=selected_camera_index, 
-                                          )
+                                          tracker=os.getenv("DETECTION_TRACKER"))
                                           
         # 3. Move the worker to the thread
         self.camera_worker.moveToThread(self.camera_thread)
@@ -423,8 +426,10 @@ class MainUI(QMainWindow):
 
         # Position and show the alert widget
         video_rect = self.video_widget.geometry()
+        self.alert_widget.setFixedWidth(video_rect.width()//2)
         alert_size = self.alert_widget.sizeHint() # Use sizeHint for auto-sized widgets
-        x = (video_rect.width() - alert_size.width()) // 2
+
+        x = alert_size.width()
         y = 0
         self.alert_widget.move(x, y)
         self.alert_widget.show()
