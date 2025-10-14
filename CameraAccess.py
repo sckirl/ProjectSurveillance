@@ -6,6 +6,7 @@ import pytesseract
 import re
 import numpy as np
 import time
+import torch
 
 class CameraWorker(QObject):
     frameUpdated = Signal(QPixmap)
@@ -13,14 +14,13 @@ class CameraWorker(QObject):
     detectionOccurred = Signal(bytes, str, str, str)
     finished = Signal()
 
-    def __init__(self, model_path, camera_index, tracker="botsort.yaml", tracks_class=None):
+    def __init__(self, model_path, camera_index, tracker="botsort.yaml"):
         super().__init__()
         self.model = YOLO(model_path)
         self.camera_index = camera_index
         self.is_running = False
         self.seen_ids = set()
         self.tracker = tracker
-        self.tracks_class = tracks_class
         
         # Use a single buffer for clarity. Each item will be a dictionary.
         self.detection_buffer = [] 
@@ -87,22 +87,12 @@ class CameraWorker(QObject):
             success, frame = self.camera.read()
             if not success: continue
 
-            # TODO: get rid of this ugly ahh thing bro HAHA but also this just works, idk
-            if self.tracks_class and len(self.tracks_class) > 0:
-                results = self.model.track(source=frame, 
-                                        persist=True, 
-                                        verbose=False, 
-                                        tracker=self.tracker, 
-                                        conf=0.4, 
-                                        classes=self.tracks_class)
-
-            else:
-                results = self.model.track(source=frame, 
-                                        persist=True, 
-                                        verbose=False, 
-                                        tracker=self.tracker, 
-                                        conf=0.4)
-                
+            results = self.model.track(source=frame, 
+                                    persist=True, 
+                                    verbose=False, 
+                                    tracker=self.tracker, 
+                                    conf=0.4, 
+                                    classes=0) # only detect one model that is just a person. 
 
             annotated_frame = cv2.resize(results[0].plot(), (640, 480))
 
