@@ -2,6 +2,7 @@ import sys
 import os
 from PySide6.QtGui import QImage
 import cv2
+from cv2_enumerate_cameras import enumerate_cameras
 import numpy as np
 from dotenv import load_dotenv
 load_dotenv()
@@ -347,16 +348,18 @@ class MainUI(QMainWindow):
             QMessageBox.critical(self, "Error", "Failed to update the record in the database.")
 
     def getCameraLabels(self):
+        #TODO: change the way to get the camera align with the actual index, 
+        # it is currently just the order of the camera
         if self.camera_combo_box:
             self.camera_combo_box.clear() 
-            self.camera_devices = QMediaDevices.videoInputs()
+            self.camera_devices = enumerate_cameras()
 
             if not self.camera_devices:
                 print("No camera devices found")
                 return
             
             for camera in self.camera_devices:
-                self.camera_combo_box.addItem(camera.description()) 
+                self.camera_combo_box.addItem(camera['name']) 
 
     def startCameraConnection(self):
         # Stop any existing worker before starting a new one
@@ -396,7 +399,6 @@ class MainUI(QMainWindow):
                          altitude=0, 
                          longitude=0):
         
-        # TODO make the latitude, altitude, longitude to automatically write from drone data
         if self.toSend:
             # Esentially just make the ID and the img for now.
             self.database.insertCoordinates(latitude=latitude, 
