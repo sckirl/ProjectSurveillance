@@ -3,6 +3,7 @@ import os
 from PySide6.QtGui import QImage
 import cv2
 from cv2_enumerate_cameras import enumerate_cameras
+from cv2_enumerate_cameras import enumerate_cameras
 import numpy as np
 from dotenv import load_dotenv
 load_dotenv()
@@ -359,7 +360,7 @@ class MainUI(QMainWindow):
                 return
             
             for camera in self.camera_devices:
-                self.camera_combo_box.addItem(camera.name) 
+                self.camera_combo_box.addItem(camera.description()) 
 
     def startCameraConnection(self):
         # Stop any existing worker before starting a new one

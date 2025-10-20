@@ -7,3 +7,6 @@ Purpose:
 1. Count the amount of palm oil seeds on the ground
 2. Stops the drone for some time, mark the tree
 3. Send the location of marked tree
+
+
+Scratch that, not palm oil seeds in this project. We detect PEOPLE (specifically criminals, from thermal imaging)
