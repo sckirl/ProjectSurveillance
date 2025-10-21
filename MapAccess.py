@@ -1,4 +1,5 @@
 import io
+from offline_folium import offline
 import folium
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWebEngineCore import QWebEnginePage
