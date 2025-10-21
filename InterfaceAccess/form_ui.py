@@ -49,17 +49,30 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.videoDisplayWidget)
 
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setSpacing(0)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.horizontalLayout_2.setSizeConstraint(QLayout.SizeConstraint.SetMinimumSize)
+        self.databaseLbl = QLabel(self.CameraTab)
+        self.databaseLbl.setObjectName(u"databaseLbl")
+        self.databaseLbl.setMaximumSize(QSize(10000, 30))
+
+        self.horizontalLayout_2.addWidget(self.databaseLbl)
+
+        self.addDatabaseBtn = QPushButton(self.CameraTab)
+        self.addDatabaseBtn.setObjectName(u"addDatabaseBtn")
+        self.addDatabaseBtn.setEnabled(True)
+
+        self.horizontalLayout_2.addWidget(self.addDatabaseBtn)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+
         self.readButton = QPushButton(self.CameraTab)
         self.readButton.setObjectName(u"readButton")
         self.readButton.setMaximumSize(QSize(16777215, 30))
 
         self.verticalLayout_2.addWidget(self.readButton)
-
-        self.databaseLbl = QLabel(self.CameraTab)
-        self.databaseLbl.setObjectName(u"databaseLbl")
-        self.databaseLbl.setMaximumSize(QSize(10000, 30))
-
-        self.verticalLayout_2.addWidget(self.databaseLbl)
 
         self.databaseEdit = QLineEdit(self.CameraTab)
         self.databaseEdit.setObjectName(u"databaseEdit")
@@ -177,8 +190,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.videoDisplayWidget.setText(QCoreApplication.translate("MainWindow", u"Choose the camera input below!", None))
-        self.readButton.setText(QCoreApplication.translate("MainWindow", u"Start Connection", None))
         self.databaseLbl.setText(QCoreApplication.translate("MainWindow", u"Choose Database and Port", None))
+        self.addDatabaseBtn.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.readButton.setText(QCoreApplication.translate("MainWindow", u"Start Connection", None))
         self.cameraLbl.setText(QCoreApplication.translate("MainWindow", u"Choose Camera Input", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.CameraTab), QCoreApplication.translate("MainWindow", u"Camera", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.TableTab), QCoreApplication.translate("MainWindow", u"Database", None))
