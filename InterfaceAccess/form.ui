@@ -65,6 +65,39 @@
        </widget>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
+        </property>
+        <item>
+         <widget class="QLabel" name="databaseLbl">
+          <property name="maximumSize">
+           <size>
+            <width>10000</width>
+            <height>30</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Choose Database and Port</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="addDatabaseBtn">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>PushButton</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QPushButton" name="readButton">
         <property name="maximumSize">
          <size>
@@ -74,19 +107,6 @@
         </property>
         <property name="text">
          <string>Start Connection</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="databaseLbl">
-        <property name="maximumSize">
-         <size>
-          <width>10000</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Choose Database and Port</string>
         </property>
        </widget>
       </item>
