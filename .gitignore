@@ -1,0 +1,8 @@
+venv/
+Assets/
+.venv/
+./ArduinoTest/
+._*
+settings.json
+.env
+local_tiles/
