@@ -9,7 +9,7 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
 
-
+# ==== MBTiles Support Classes ====
 def _detect_mbtiles_format(mbtiles_path: str):
     """Read metadata table and return 'jpg' or 'png' depending on format recorded in metadata."""
     try:
@@ -27,7 +27,6 @@ def _detect_mbtiles_format(mbtiles_path: str):
     except Exception:
         pass
     return 'png'
-
 
 class _MBTilesHTTPRequestHandler(BaseHTTPRequestHandler):
     # path: /tiles/{z}/{x}/{y}.{ext}
@@ -103,6 +102,7 @@ class _MBTilesServer:
             self.httpd.server_close()
         self.is_running = False
 
+# ==== Main MapWorker Class, to be called in main.py PyQt Config ====
 class WebEnginePage(QWebEnginePage):
     """Custom QWebEnginePage to open links in the external browser."""
     def acceptNavigationRequest(self, url, nav_type, is_main_frame):
@@ -125,8 +125,8 @@ class MapWorker:
         custom_page = WebEnginePage(self.map_view)
         self.map_view.setPage(custom_page)
         
-        # MBTiles support: look for an MBTiles file next to this module named 'offline.mbtiles'
-        self._mbtiles_path = os.path.join(os.path.dirname(__file__), "offline.mbtiles")
+        # MBTiles support: look for an MBTiles file next to this module named 'INDONESIA_MAP.mbtiles'
+        self._mbtiles_path = os.path.join(os.path.dirname(__file__), "INDONESIA_MAP.mbtiles")
         self._mbtiles_server = None
         self._mbtiles_format = None
         if os.path.exists(self._mbtiles_path):
@@ -177,7 +177,7 @@ class MapWorker:
             folium.Marker(
                 location=coords,
                 popup=popup_html,
-                tooltip="Click fo sr options",
+                tooltip="Click for options",
             ).add_to(m)
         except Exception as e:
             print(e)
