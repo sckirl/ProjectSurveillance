@@ -29,6 +29,7 @@ class CameraWorker(QObject):
         
         self.roi_latitude = (20, 390, 200, 30)
         self.roi_longitude = (415, 390, 200, 30)
+        self.last_detection_original_frame = None
 
     def perform_ocr(self, frame, roi):
         x, y, w, h = roi
@@ -56,14 +57,15 @@ class CameraWorker(QObject):
         # 4. If there are new IDs, create and send one consolidated alert
         if newly_detected_ids:
             # Use the most recent frame's data for the alert image and OCR
-            latest_frame_data = self.detection_buffer[-1]
+            best_frame_data = max(self.detection_buffer, key=lambda data: len(data['ids']))
+            print(best_frame_data.keys())
             
             # Perform OCR on the original, clean frame for accuracy
-            lat_text = self.perform_ocr(latest_frame_data['original_frame'], self.roi_latitude)
-            lon_text = self.perform_ocr(latest_frame_data['original_frame'], self.roi_longitude)
+            lat_text = self.perform_ocr(best_frame_data['annotated_frame'], self.roi_latitude)
+            lon_text = self.perform_ocr(best_frame_data['annotated_frame'], self.roi_longitude)
 
             # Prepare the annotated image for the alert
-            success, buffer = cv2.imencode('.jpg', latest_frame_data['annotated_frame'])
+            success, buffer = cv2.imencode('.jpg', best_frame_data['annotated_frame'])
             if success:
                 image_bytes = buffer.tobytes()
                 detection_message = f"Detected {len(newly_detected_ids)} new object(s). IDs: {list(newly_detected_ids)}"
@@ -105,7 +107,6 @@ class CameraWorker(QObject):
                 track_ids = set(results[0].boxes.id.cpu().numpy().astype(int).flatten())
                 # Add a dictionary to the buffer containing all necessary data
                 self.detection_buffer.append({
-                    'original_frame': frame.copy(),
                     'annotated_frame': annotated_frame,
                     'ids': track_ids
                 })

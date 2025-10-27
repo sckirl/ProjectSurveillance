@@ -6,4 +6,4 @@ Assets/
 settings.json
 .env
 local_tiles/
-env.txt
+.env/

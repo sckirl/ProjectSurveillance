@@ -1,7 +1,0 @@
-
-**/Videos/
-**/SIX_CHANNEL_DATASET/
-venv/
-Assets/
-.venv/
-./ArduinoTest/
