@@ -27,7 +27,7 @@ class MainUI(QMainWindow):
 
         # ------ Necessary PySide6 things, to load from Designer .ui file ------
         loader = QUiLoader()
-        ui_file = QFile(os.getenv("INTERFACE"))
+        ui_file = QFile("InterfaceAccess/form.ui")
         ui_file.open(QFile.ReadOnly)
         
         self.ui = loader.load(ui_file, self)   # load UI
