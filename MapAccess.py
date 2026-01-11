@@ -1,5 +1,6 @@
 import io
 import folium
+from offline_folium import offline
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWebEngineCore import QWebEnginePage
 from PySide6.QtWebEngineWidgets import QWebEngineView
@@ -37,20 +38,21 @@ class MapWorker:
             # If coordinates are invalid, show a default location (e.g., Jakarta)
             print("Invalid coordinates provided. Showing default map.")
             coords = [-6.2088, 106.8456]
-
+        
         # Create the map
-        m = folium.Map(location=coords, zoom_start=100)
-
+        m = folium.Map(location=coords, zoom_start=100, tiles='OpenStreetMap')
+        
         try: 
             # Create the Google Maps URL and popup HTML
             gmaps_url = f"https://www.google.com/maps/search/?api=1&query={coords[0]},{coords[1]}"
-            popup_html = f'<a href="{gmaps_url}" target="_blank">Open in Google Maps</a>'
+            popup_html = f'<a target="_blank" rel="noopener noreferrer" href="{gmaps_url}" target="_blank">Open in Google Maps</a>' 
 
             # Add a marker to the map
             folium.Marker(
                 location=coords,
                 popup=popup_html,
-                tooltip="Click fo sr options",
+                tooltip="Click for options",
+                icon=folium.CustomIcon("pin.png", icon_size=(50,50))
             ).add_to(m)
         except Exception as e:
             print(e)

@@ -27,7 +27,7 @@ class MainUI(QMainWindow):
 
         # ------ Necessary PySide6 things, to load from Designer .ui file ------
         loader = QUiLoader()
-        ui_file = QFile(os.getenv("INTERFACE"))
+        ui_file = QFile("InterfaceAccess/form.ui")
         ui_file.open(QFile.ReadOnly)
         
         self.ui = loader.load(ui_file, self)   # load UI
@@ -360,7 +360,7 @@ class MainUI(QMainWindow):
                 return
             
             for camera in self.camera_devices:
-                self.camera_combo_box.addItem(camera.description()) 
+                self.camera_combo_box.addItem(camera.name) 
 
     def startCameraConnection(self):
         # Stop any existing worker before starting a new one
